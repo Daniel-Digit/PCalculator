@@ -94,7 +94,7 @@ class PriceCalc {
                     if (paused) {
                         way = now - pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
                     }
-                    pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf("."))) + way);
+                    pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) + way);
                     ptime = now;
                     pause.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), ptime);
                     double sofar = getFee(customer, pauseTotal, cmd);
