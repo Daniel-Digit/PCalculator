@@ -38,6 +38,8 @@ public class PriceCalc {
                     System.out.println("~Fee: " + fee + " birr");
                     customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
                 }
+            }else if (cmd.contains("display")){
+                String fullList = (Arrays.asList(customer).toString());
             }
         }
     }
@@ -54,6 +56,17 @@ public class PriceCalc {
 
         return time;
     }
+
+    /*private static void displayAll(HashMap<String, Integer> customer) {
+
+        int size=customer.size();
+
+        for (int i=0; i<size; i++) {
+
+            System.out.println();
+
+        }
+    }*/
 
 
 
