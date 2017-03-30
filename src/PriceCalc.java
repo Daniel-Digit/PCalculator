@@ -14,8 +14,12 @@ class PriceCalc {
         int etime;
         int duration;
         double fee;
+        int ptime = 0;
+        int takeAway;
         String cmd = "";
         HashMap<String, Integer> customer = new HashMap<>();
+        HashMap<String, Integer> pause = new HashMap<>();
+        HashMap<String, Integer> pauseTotal = new HashMap<>();
         while (!cmd.equals ("exit")) {
             System.out.print("~");
             cmd = in.nextLine();
@@ -25,6 +29,8 @@ class PriceCalc {
                 name=in.nextLine();
                 name = name.toLowerCase();
                 customer.put(name, stime);
+                pause.put(name, ptime);
+                pauseTotal.put(name, 0);
             } else if (cmd.contains(".end")) {
                 if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
                     System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
@@ -35,6 +41,13 @@ class PriceCalc {
                     System.out.println("Fee: " + fee + " birr");
                     customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
                 }
+            }else if (cmd.contains(".pause")) {
+                ptime = getTime();
+                pause.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), ptime);
+            }else if (cmd.contains(".resume")) {
+                takeAway = getTime()-pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf(".")))+takeAway);
+                System.out.println(pauseTotal.get(cmd.substring(0, cmd.indexOf("."))));
             }else if (cmd.contains("display")){
                 String fullList = (Arrays.asList(customer).toString());
                 String[] fullArray = (fullList.substring(2, fullList.length()-2).split(", "));
@@ -90,9 +103,10 @@ class PriceCalc {
 
         return time;
     }
-    private static double getFee(HashMap<String, Integer> customer, String cmd) {
+    private static double getFee(HashMap<String, Integer> customer, HashMap<String, Integer> totalPause, String cmd) {
+        int removeTime = totalPause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
         int etime = getTime();
-        int duration = etime - customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+        int duration = etime - customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase())-removeTime;
         double fee = 0.0;
         fee = fee + duration * 0.25;
         return fee;
