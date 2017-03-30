@@ -36,6 +36,14 @@ public class PriceCalc {
                     System.out.println("~Fee: " + fee + " birr");
                     customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
                 }
+            } else if (cmd.contains(".current")) {
+                if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
+                    System.err.print("~User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
+                    System.out.println();
+                } else {
+                    double sofar = getCurrent(customer, cmd);
+                    System.out.println("~Current fee for " + cmd.substring(0, cmd.indexOf(".")) + " is " + sofar);
+                }
             }
         }
     }
@@ -58,6 +66,12 @@ public class PriceCalc {
         double fee = 0.0;
         fee = fee + duration * 0.25;
         return fee;
+    }
+    public static double getCurrent(HashMap<String, Integer> customer, String cmd) {
+
+        double fee = getFee(customer, cmd);
+        return fee;
+
     }
 
 
