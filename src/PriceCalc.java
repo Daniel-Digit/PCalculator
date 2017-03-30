@@ -37,7 +37,7 @@ class PriceCalc {
                     System.out.println();
 
                 } else {
-                    fee = getFee(customer, totalPause, cmd);
+                    fee = getFee(customer, pauseTotal, cmd);
                     System.out.println("Fee: " + fee + " birr");
                     customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
                 }
@@ -70,7 +70,7 @@ class PriceCalc {
                                 System.out.println("Start time: " + hour + ":" + min);
                             }
                             String currCmd = singlename + ".end";
-                            System.out.println("Current fee: " + getFee(customer, totalPause, currCmd));
+                            System.out.println("Current fee: " + getFee(customer, pauseTotal, currCmd));
                             System.out.println("");
                         } else {
                             System.err.print ("No customers found!");
@@ -84,7 +84,7 @@ class PriceCalc {
                     System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
                     System.out.println();
                 } else {
-                    double sofar = getFee(customer, totalPause, cmd);
+                    double sofar = getFee(customer, pauseTotal, cmd);
                     System.out.println("Current fee for " + cmd.substring(0, cmd.indexOf(".")) + " is " + sofar);
                 }
             }
