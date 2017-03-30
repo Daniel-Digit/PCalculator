@@ -103,9 +103,10 @@ class PriceCalc {
 
         return time;
     }
-    private static double getFee(HashMap<String, Integer> customer, String cmd) {
+    private static double getFee(HashMap<String, Integer> customer, HashMap<String, Integer> totalPause, String cmd) {
+        int removeTime = totalPause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
         int etime = getTime();
-        int duration = etime - customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+        int duration = etime - customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase())-removeTime;
         double fee = 0.0;
         fee = fee + duration * 0.25;
         return fee;
