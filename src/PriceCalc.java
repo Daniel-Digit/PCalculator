@@ -36,6 +36,27 @@ public class PriceCalc {
                     System.out.println("~Fee: " + fee + " birr");
                     customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
                 }
+            }else if (cmd.contains("display")){
+                String fullList = (Arrays.asList(customer).toString());
+                String[] fullArray = (fullList.substring(2, fullList.length()-2).split(", "));
+
+                for (int i=0; i<fullArray.length; i++){
+                    String current = fullArray[i];
+                    String singlename = current.substring(0, current.indexOf("="));
+                    int time = Integer.parseInt(current.substring (current.indexOf("=")+1, current.length()));
+                    int hour = time/60;
+                    int min = time % 60;
+                    System.out.println ("Name: "+singlename);
+                    if (min<10) {
+                        System.out.println("Start time: " + hour + ":0" + min);
+                    } else {
+                        System.out.println("Start time: " + hour + ":" + min);
+                    }
+                    String currCmd = singlename+".end";
+                    System.out.println("Current fee: "+getFee(customer, currCmd));
+                    System.out.println("");
+
+                }
             } else if (cmd.contains(".current")) {
                 if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
                     System.err.print("~User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
