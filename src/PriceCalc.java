@@ -38,11 +38,22 @@ public class PriceCalc {
                 }
             }else if (cmd.contains("display")){
                 String fullList = (Arrays.asList(customer).toString());
-                String[] fullArray = (fullList.substring(2, fullList.length()-2).split(","));
+                String[] fullArray = (fullList.substring(2, fullList.length()-2).split(", "));
 
                 for (int i=0; i<fullArray.length; i++){
+                    String current = fullArray[i];
+                    String singlename = current.substring(0, current.indexOf("="));
+                    int time = Integer.parseInt(current.substring (current.indexOf("=")+1, current.length()));
+                    int hour = time/60;
+                    int min = time % 60;
+                    System.out.println ("Name: "+singlename);
+                    if (min<10) {
+                        System.out.println("Start time: " + hour + ":0" + min);
+                    } else {
+                        System.out.println("Start time: " + hour + ":" + min);
+                    }
+                    System.out.println("");
 
-                    System.out.println("User:"+fullArray[i].substring(0, fullArray[i].indexOf("="))+"\n"+"Time Started: "+Integer.parseInt(fullArray[i].substring(fullArray[i].indexOf("="+1), fullArray[i].length()))/60+Integer.parseInt(fullArray[i].substring(fullArray[i].indexOf("=")+1, fullArray[i].length()))%60);
                 }
             }
         }
