@@ -52,6 +52,8 @@ public class PriceCalc {
                     } else {
                         System.out.println("Start time: " + hour + ":" + min);
                     }
+                    String currCmd = singlename+".end";
+                    System.out.println("Current fee: "+getFee(customer, currCmd));
                     System.out.println("");
 
                 }
