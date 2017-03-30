@@ -38,6 +38,12 @@ public class PriceCalc {
                 }
             }else if (cmd.contains("display")){
                 String fullList = (Arrays.asList(customer).toString());
+                String[] fullArray = (fullList.substring(2, fullList.length()-2).split(","));
+
+                for (int i=0; i<fullArray.length; i++){
+
+                    System.out.println("User:"+fullArray[i].substring(0, fullArray[i].indexOf("="))+"\n"+"Time Started: "+Integer.parseInt(fullArray[i].substring(fullArray[i].indexOf("="+1), fullArray[i].length()))/60+Integer.parseInt(fullArray[i].substring(fullArray[i].indexOf("=")+1, fullArray[i].length()))%60);
+                }
             }
         }
     }
@@ -61,17 +67,6 @@ public class PriceCalc {
         fee = fee + duration * 0.25;
         return fee;
     }
-
-    /*private static void displayAll(HashMap<String, Integer> customer) {
-
-        int size=customer.size();
-
-        for (int i=0; i<size; i++) {
-
-            System.out.println();
-
-        }
-    }*/
 
 
 
