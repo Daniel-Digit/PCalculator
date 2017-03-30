@@ -27,14 +27,12 @@ public class PriceCalc {
                 name = name.toLowerCase();
                 customer.put(name, stime);
             } else if (cmd.contains(".end")) {
-                if (customer.get(cmd.substring (0, cmd.indexOf(".")).toLowerCase()) == null) {
-                    System.err.print("~User '"+cmd.substring (0, cmd.indexOf("."))+"' does not exist!");
+                if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
+                    System.err.print("~User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
                     System.out.println();
 
                 } else {
-                    etime = getTime();
-                    duration = etime - customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
-                    fee = fee + duration * 0.25;
+                    fee = getFee(customer, cmd);
                     System.out.println("~Fee: " + fee + " birr");
                     customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
                 }
@@ -53,6 +51,13 @@ public class PriceCalc {
         }
 
         return time;
+    }
+    public static double getFee(HashMap<String, Integer> customer, String cmd) {
+        int etime = getTime();
+        int duration = etime - customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+        double fee = 0.0;
+        fee = fee + duration * 0.25;
+        return fee;
     }
 
 
