@@ -5,11 +5,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class PriceCalc {
+class PriceCalc {
 
     public static void main (String [] args) {
         Scanner in = new Scanner (System.in);
-        String name="";
+        String name;
         int stime;
         int etime;
         int duration;
@@ -17,7 +17,6 @@ public class PriceCalc {
         String cmd = "";
         HashMap<String, Integer> customer = new HashMap<>();
         while (!cmd.equals ("exit")) {
-            fee = 0.0;
             System.out.print("~");
             cmd = in.nextLine();
             if (cmd.equals("new")) {
@@ -81,14 +80,14 @@ public class PriceCalc {
 
         return time;
     }
-    public static double getFee(HashMap<String, Integer> customer, String cmd) {
+    private static double getFee(HashMap<String, Integer> customer, String cmd) {
         int etime = getTime();
         int duration = etime - customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
         double fee = 0.0;
         fee = fee + duration * 0.25;
         return fee;
     }
-    public static double getCurrent(HashMap<String, Integer> customer, String cmd) {
+    private static double getCurrent(HashMap<String, Integer> customer, String cmd) {
 
         double fee = getFee(customer, cmd);
         return fee;
