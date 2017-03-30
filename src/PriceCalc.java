@@ -8,7 +8,7 @@ import java.util.*;
 class PriceCalc {
 
     public static void main (String [] args) {
-        Scanner in = new Scanner (System.in);
+        Scanner in = new Scanner(System.in);
         String name;
         int stime;
         int etime;
@@ -20,17 +20,19 @@ class PriceCalc {
         HashMap<String, Integer> customer = new HashMap<>();
         HashMap<String, Integer> pause = new HashMap<>();
         HashMap<String, Integer> pauseTotal = new HashMap<>();
-        while (!cmd.equals ("exit")) {
+        HashMap<String, Boolean> pausedMap = new HashMap<>();
+        while (!cmd.equals("exit")) {
             System.out.print("~");
             cmd = in.nextLine();
             if (cmd.equals("new")) {
                 stime = getTime();
                 System.out.print("Name: ");
-                name=in.nextLine();
+                name = in.nextLine();
                 name = name.toLowerCase();
                 customer.put(name, stime);
                 pause.put(name, ptime);
                 pauseTotal.put(name, 0);
+                pausedMap.put(name, false);
             } else if (cmd.contains(".end")) {
                 if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
                     System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
@@ -41,18 +43,19 @@ class PriceCalc {
                     System.out.println("Fee: " + fee + " birr");
                     customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
                 }
-            }else if (cmd.contains(".pause")) {
+            } else if (cmd.contains(".pause")) {
                 ptime = getTime();
                 pause.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), ptime);
-            }else if (cmd.contains(".resume")) {
-                takeAway = getTime()-pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
-                pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf(".")))+takeAway);
-                System.out.println(pauseTotal.get(cmd.substring(0, cmd.indexOf("."))));
-            }else if (cmd.contains("display")){
+                pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), true);
+            } else if (cmd.contains(".resume")) {
+                takeAway = getTime() - pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf("."))) + takeAway);
+                pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), false);
+            } else if (cmd.contains("display")) {
                 String fullList = (Arrays.asList(customer).toString());
-                String[] fullArray = (fullList.substring(2, fullList.length()-2).split(", "));
+                String[] fullArray = (fullList.substring(2, fullList.length() - 2).split(", "));
                 if (fullArray[0].equals("")) {
-                    System.err.print ("No customers found!");
+                    System.err.print("No customers found!");
                     System.out.println();
                 } else {
 
@@ -70,10 +73,11 @@ class PriceCalc {
                                 System.out.println("Start time: " + hour + ":" + min);
                             }
                             String currCmd = singlename + ".end";
-                            System.out.println("Current fee: " + getFee(customer, pauseTotal, currCmd));
+                            System.out.println("Total Pause Time: " + pauseTotal.get(singlename));
+                            System.out.println("Current fee: " + getCurrent(customer, pause, pauseTotal, currCmd, pausedMap));
                             System.out.println("");
                         } else {
-                            System.err.print ("No customers found!");
+                            System.err.print("No customers found!");
                             System.out.println();
                         }
 
@@ -84,11 +88,42 @@ class PriceCalc {
                     System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
                     System.out.println();
                 } else {
+                    int now = getTime();
+                    int way = 0;
+                    Boolean paused = pausedMap.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                    if (paused) {
+                        way = now - pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                    }
+                    pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf("."))) + way);
+                    ptime = now;
+                    pause.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), ptime);
                     double sofar = getFee(customer, pauseTotal, cmd);
                     System.out.println("Current fee for " + cmd.substring(0, cmd.indexOf(".")) + " is " + sofar);
                 }
             }
         }
+    }
+    
+    private static double getCurrent(HashMap<String, Integer> customer, HashMap<String, Integer> pause, HashMap<String, Integer> pauseTotal, String cmd,HashMap<String, Boolean> pausedMap) {
+        double sofar= 0.0;
+        if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
+            System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
+            System.out.println();
+        } else {
+            int now = getTime();
+            int way = 0;
+            Boolean paused = pausedMap.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+            if (paused) {
+                way = now - pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+            }
+            pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf(".")))+way);
+            int ptime = now;
+            pause.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), ptime);
+            sofar = getFee(customer, pauseTotal, cmd);
+
+        }
+
+        return sofar;
     }
     private static int getTime(){
         DateFormat format = new SimpleDateFormat("HHmm");
