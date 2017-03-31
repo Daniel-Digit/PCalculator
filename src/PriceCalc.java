@@ -106,10 +106,7 @@ class PriceCalc {
                                     } else {
                                         System.out.println("Start time: " + hour + ":" + min);
                                     }
-                                    String currCmd = singlename + ".end";
-                                    System.out.println("Total Pause Time: " + pauseTotal.get(singlename));
-                                    System.out.println("Current fee: " + getCurrent(customer, pause, pauseTotal, currCmd, pausedMap));
-                                    System.out.println("");
+
                                 }
                                 String currCmd = singlename + ".end";
                                 if (!(pausedMap.get(singlename))) {
