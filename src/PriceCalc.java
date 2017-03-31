@@ -53,10 +53,14 @@ class PriceCalc {
                     }
             } else if (cmd.contains(".pause")) {
                 if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
-                    System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
-                    System.out.println();
+                    if (prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
+                        System.err.println(cmd.substring(0, cmd.indexOf(".")).toLowerCase()+" cannot be paused (Prepaid Account)");
                 } else if (pausedMap.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase())) {
                     System.err.println("User '" + cmd.substring(0, cmd.indexOf(".")) + "' is already paused!");
+                    } else {
+                        System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
+                        System.out.println();
+                    }
                 } else {
                     System.out.println("Customer " + cmd.substring(0, cmd.indexOf(".")) + " has been paused");
                     ptime = getTime();
@@ -64,10 +68,17 @@ class PriceCalc {
                     pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), true);
                 }
             } else if (cmd.contains(".resume")) {
+
                 if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
-                    System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
-                    System.out.println();
-                } else {
+                    if (prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
+                        System.err.println(cmd.substring(0, cmd.indexOf(".")).toLowerCase() + " cannot be resumed (Prepaid Account)");
+                    } else {
+                        System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
+                        System.out.println();
+                    }
+                } else if (!pausedMap.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase())) {
+                    System.err.println(cmd.substring(0, cmd.indexOf(".")).toLowerCase() + " is not paused!");
+                }else {
                     System.out.println("Customer " + cmd.substring(0, cmd.indexOf(".")) + " has been resumed");
                     takeAway = getTime() - pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
                     pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) + takeAway);
