@@ -183,7 +183,7 @@ class PriceCalc {
                     System.out.println("-- prepaid: create a new prepaid user.");
                     System.out.println("-- change: calculate change based off inputted fee and cash given");
                     System.out.println("------------------------------------------------------");
-                } else if(cmd.contains(".change")) {
+                } else if(cmd.contains("change")) {
                     System.out.print("Input user's fee: ");
                     double manFee = in.nextDouble();
                     calcChange(manFee);
