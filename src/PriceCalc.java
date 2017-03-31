@@ -77,8 +77,7 @@ class PriceCalc {
                             System.out.println("Current fee: " + getCurrent(customer, pause, pauseTotal, currCmd, pausedMap));
                             System.out.println("");
                         } else {
-                            System.err.print("No customers found!");
-                            System.out.println();
+                            /*System.out.println();*/
                         }
 
                     }
@@ -100,6 +99,8 @@ class PriceCalc {
                     double sofar = getFee(customer, pauseTotal, cmd);
                     System.out.println("Current fee for " + cmd.substring(0, cmd.indexOf(".")) + " is " + sofar);
                 }
+            } else if (cmd.contains(".all")) {
+                customer = endAll(customer, pause, pauseTotal, pausedMap);
             }
         }
     }
@@ -138,8 +139,8 @@ class PriceCalc {
 
         return time;
     }
-    private static double getFee(HashMap<String, Integer> customer, HashMap<String, Integer> totalPause, String cmd) {
-        int removeTime = totalPause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+    private static double getFee(HashMap<String, Integer> customer, HashMap<String, Integer> pausedTotal, String cmd) {
+        int removeTime = pausedTotal.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
         int etime = getTime();
         int duration = etime - customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase())-removeTime;
         double fee = 0.0;
@@ -147,6 +148,37 @@ class PriceCalc {
         return fee;
     }
 
+
+    private static HashMap endAll(HashMap<String, Integer> customer, HashMap<String, Integer> pause, HashMap<String, Integer> pauseTotal, HashMap<String, Boolean> pausedMap) {
+        String fullList = (Arrays.asList(customer).toString());
+        String[] fullArray = (fullList.substring(2, fullList.length() - 2).split(", "));
+        HashMap<String, Integer> newMap = new HashMap<>();
+
+        for (int i = 0; i < fullArray.length; i++) {
+            String current = fullArray[i];
+            String singlename = current.substring(0, current.indexOf("="));
+            if (!(customer.get(singlename) == null)) {
+                int time = Integer.parseInt(current.substring(current.indexOf("=") + 1, current.length()));
+                int hour = time / 60;
+                int min = time % 60;
+                System.out.println("Name: " + singlename);
+                if (min < 10) {
+                    System.out.println("Start time: " + hour + ":0" + min);
+                } else {
+                    System.out.println("Start time: " + hour + ":" + min);
+                }
+                String currCmd = singlename + ".end";
+                System.out.println("Total Pause Time: " + pauseTotal.get(singlename));
+                System.out.println("Total fee: " + getCurrent(customer, pause, pauseTotal, currCmd, pausedMap));
+                System.out.println("");
+            } else {
+                System.err.print("No customers found!");
+                System.out.println();
+            }
+        }
+
+        return newMap;
+    }
 
 
 }
