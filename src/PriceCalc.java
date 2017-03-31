@@ -24,6 +24,7 @@ class PriceCalc {
         HashMap<String, Boolean> pausedMap = new HashMap<>();
         while (!cmd.equals("exit")) {
             cmd = in.nextLine();
+            System.out.println();
             if (cmd.substring(cmd.indexOf(".") + 1, cmd.length()).contains(".")) {
                 System.err.println("Commands cannot contain any more than 1 '.'");
             } else {
