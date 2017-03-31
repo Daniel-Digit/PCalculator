@@ -11,13 +11,14 @@ class PriceCalc {
         Scanner in = new Scanner(System.in);
         String name;
         int stime;
-        int etime;
+        double money;
         int duration;
         double fee;
         int ptime = 0;
         int takeAway;
         String cmd = "";
         HashMap<String, Integer> customer = new HashMap<>();
+        HashMap<String, Integer> prepaid = new HashMap<>();
         HashMap<String, Integer> pause = new HashMap<>();
         HashMap<String, Integer> pauseTotal = new HashMap<>();
         HashMap<String, Boolean> pausedMap = new HashMap<>();
@@ -100,6 +101,17 @@ class PriceCalc {
                     double sofar = getFee(customer, pauseTotal, cmd);
                     System.out.println("Current fee for " + cmd.substring(0, cmd.indexOf(".")) + " is " + sofar);
                 }
+            } else if (cmd.contains("prepaid")) {
+                stime = getTime();
+                System.out.print("Name: ");
+                name = in.nextLine();
+                name = name.toLowerCase();
+                prepaid.put(name, stime);
+                System.out.print ("Money Available: ");
+                money = in.nextDouble();
+                PCalc prethread = new PCalc(name, money);
+                prethread.start();
+
             }
         }
     }
@@ -125,7 +137,7 @@ class PriceCalc {
 
         return sofar;
     }
-    private static int getTime(){
+    public static int getTime(){
         DateFormat format = new SimpleDateFormat("HHmm");
         Date currdate = new Date();
         String date = format.format(currdate);
@@ -149,4 +161,26 @@ class PriceCalc {
 
 
 
+}
+class PCalc extends Thread {
+    private double money;
+    private String name;
+    public PCalc (String name, double money) {
+        this.name = name;
+        this.money = money;
+    }
+    public void run () {
+
+        int timeLeft = (int) (money*4);
+
+        int seconds = (timeLeft*60);
+
+        for (int i = seconds; i>0; i--) {
+            try {
+                Thread.sleep(1000);
+            } catch(InterruptedException ex) {}
+        }
+        System.out.println("~Customer "+name+" has finished their service.");
+
+    }
 }
