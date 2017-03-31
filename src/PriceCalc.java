@@ -24,6 +24,7 @@ class PriceCalc {
         HashMap<String, Boolean> pausedMap = new HashMap<>();
         while (!cmd.equals("exit")) {
             cmd = in.nextLine();
+            System.out.println();
             if (cmd.equals("new")) {
                 stime = getTime();
                 System.out.print("Name: ");
@@ -44,13 +45,25 @@ class PriceCalc {
                     customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
                 }
             } else if (cmd.contains(".pause")) {
-                ptime = getTime();
-                pause.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), ptime);
-                pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), true);
+                if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
+                    System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
+                    System.out.println();
+                } else {
+                    System.out.println("Customer " + cmd.substring(0, cmd.indexOf(".")) + " has been paused");
+                    ptime = getTime();
+                    pause.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), ptime);
+                    pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), true);
+                }
             } else if (cmd.contains(".resume")) {
-                takeAway = getTime() - pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
-                pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf("."))) + takeAway);
-                pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), false);
+                if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
+                    System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
+                    System.out.println();
+                } else {
+                    System.out.println("Customer " + cmd.substring(0, cmd.indexOf(".")) + " has been resumed");
+                    takeAway = getTime() - pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                    pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) + takeAway);
+                    pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), false);
+                }
             } else if (cmd.contains("display")) {
                 String fullList = (Arrays.asList(customer).toString());
                 String[] fullArray = (fullList.substring(2, fullList.length() - 2).split(", "));
@@ -118,7 +131,9 @@ class PriceCalc {
                 prethread.start();
 
             }  else {
-                System.err.println("\""+cmd+"\"" + " is not a valid command!");
+                if (!cmd.equals("")) {
+                    System.err.println("\"" + cmd + "\"" + " is not a valid command!");
+                }
             }
         }
     }
@@ -217,7 +232,12 @@ class PCalc extends Thread {
                 Thread.sleep(1000);
             } catch(InterruptedException ex) {}
         }
-        System.out.println("~Customer "+name+" has finished their service.");
+        System.out.println("Customer "+name+" has finished their service at " + getTime());
 
+    }
+    public String getTime(){
+        DateFormat format = new SimpleDateFormat("HH:mm");
+        Date currdate = new Date();
+        return format.format(currdate);
     }
 }
