@@ -35,6 +35,7 @@ class PriceCalc {
                     if (name.contains(".")) {
                         System.err.println("Name cannot contain a '.'");
                     } else {
+                        System.out.println("Regular User Successfully Registered\n");
                         name = name.toLowerCase();
                         customer.put(name, stime);
                         pause.put(name, ptime);
@@ -144,7 +145,13 @@ class PriceCalc {
                     name = name.toLowerCase();
                     prepaid.put(name, stime);
                     System.out.print("Money Available: ");
+                    while (!in.hasNextDouble()) {
+                        System.out.print("\nMoney Available: ");
+                        System.err.println ("Invalid Input!");
+                        in.next();
+                    }
                     money = in.nextDouble();
+                    System.out.println("Prepaid User Successfully Registered");
                     PCalc prethread = new PCalc(name, money);
                     prethread.start();
 
