@@ -108,7 +108,11 @@ class PriceCalc {
                                     System.out.println("Start time: " + hour + ":" + min);
                                 }
                                 String currCmd = singlename + ".end";
-                                System.out.println("Total Pause Time: " + pauseTotal.get(singlename));
+                                if (!(pausedMap.get(singlename))) {
+                                    System.out.println("Total Pause Time: " + pauseTotal.get(singlename)+" "+"(Currently not paused)");
+                                } else {
+                                    System.out.println("Total Pause Time: " + pauseTotal.get(singlename)+" "+"(Currently paused)");
+                                }
                                 System.out.println("Current fee: " + getCurrent(customer, pause, pauseTotal, currCmd, pausedMap));
                                 System.out.println("");
                             }
@@ -130,6 +134,11 @@ class PriceCalc {
                         pause.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), ptime);
                         double sofar = getFee(customer, pauseTotal, cmd);
                         System.out.println("Current fee for " + cmd.substring(0, cmd.indexOf(".")) + " is " + sofar);
+                        if (!(pausedMap.get(cmd.substring(0, cmd.indexOf("."))))) {
+                            System.out.println("(Currently not paused)");
+                        } else {
+                            System.out.println("(Currently paused)");
+                        }
                     }
                 } else if (cmd.contains(".all")) {
                     if (customer.isEmpty()) {
@@ -157,7 +166,7 @@ class PriceCalc {
 
                 } else {
                     if (!cmd.equals("")) {
-                        System.err.println("\"" + cmd + "\"" + " is not a valid command!");
+                        System.err.println("\"" + cmd + "\"" + " is not a valid command!\nType 'Help' for a list of commands.");
                     }
                 }
 
