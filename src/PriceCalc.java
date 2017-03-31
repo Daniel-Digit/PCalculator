@@ -280,7 +280,7 @@ class PCalc extends Thread {
                 Thread.sleep(1000);
             } catch(InterruptedException ex) {}
         }
-        System.out.println("Customer "+name+" has finished their service at " + getTime());
+        System.out.println("\nCustomer "+name+" has finished their service at " + getTime());
 
     }
     public String getTime(){
