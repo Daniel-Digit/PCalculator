@@ -23,7 +23,7 @@ class PriceCalc {
         HashMap<String, Integer> pauseTotal = new HashMap<>();
         HashMap<String, Boolean> pausedMap = new HashMap<>();
         while (!cmd.equals("exit")) {
-            cmd = in.nextLine();
+            cmd = in.nextLine().toLowerCase();
             System.out.println();
             if (cmd.substring(cmd.indexOf(".") + 1, cmd.length()).contains(".")) {
                 System.err.println("Commands cannot contain any more than 1 '.'");
@@ -52,60 +52,64 @@ class PriceCalc {
                         System.out.println("Fee: " + fee + " birr");
                         customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
                     }
-            } else if (cmd.contains(".pause")) {
-                if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
-                    if (prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
-                        System.err.println(cmd.substring(0, cmd.indexOf(".")).toLowerCase() + " cannot be paused (Prepaid Account)");
+                } else if (cmd.contains(".pause")) {
+                    if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
+                        if (prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
+                            System.err.println(cmd.substring(0, cmd.indexOf(".")).toLowerCase() + " cannot be paused (Prepaid Account)");
+                        } else {
+                            System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
+                            System.out.println();
+                        }
+                    } else if (pausedMap.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase())) {
+                        System.err.println("User '" + cmd.substring(0, cmd.indexOf(".")) + "' is already paused!");
+
                     } else {
-                        System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
-                        System.out.println();
+                        System.out.println("Customer " + cmd.substring(0, cmd.indexOf(".")) + " has been paused");
+                        ptime = getTime();
+                        pause.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), ptime);
+                        pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), true);
                     }
-                } else if (pausedMap.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase())) {
-                    System.err.println("User '" + cmd.substring(0, cmd.indexOf(".")) + "' is already paused!");
-
-                } else {
-                    System.out.println("Customer " + cmd.substring(0, cmd.indexOf(".")) + " has been paused");
-                    ptime = getTime();
-                    pause.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), ptime);
-                    pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), true);
-                }
-            } else if (cmd.contains(".resume")) {
-
-                if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
-                    if (prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
-                        System.err.println(cmd.substring(0, cmd.indexOf(".")).toLowerCase() + " cannot be resumed (Prepaid Account)");
+                } else if (cmd.contains(".resume")) {
+                    if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
+                        if (prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
+                            System.err.println(cmd.substring(0, cmd.indexOf(".")).toLowerCase() + " cannot be resumed (Prepaid Account)");
+                        } else {
+                            System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
+                            System.out.println();
+                        }
+                    } else if (!pausedMap.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase())) {
+                        System.err.println(cmd.substring(0, cmd.indexOf(".")).toLowerCase() + " is not paused!");
+                    }else {
+                        System.out.println("Customer " + cmd.substring(0, cmd.indexOf(".")) + " has been resumed");
+                        takeAway = getTime() - pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                        pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) + takeAway);
+                        pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), false);
+                    }
+                } else if (cmd.contains("display")) {
+                    String fullList = (Arrays.asList(customer).toString());
+                    String[] fullArray = (fullList.substring(2, fullList.length() - 2).split(", "));
+                    if (fullArray[0].equals("")) {
+                        System.err.print("No customers found!");
+                        System.out.println();
                     } else {
-                        System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
-                        System.out.println();
-                    }
-                } else if (!pausedMap.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase())) {
-                    System.err.println(cmd.substring(0, cmd.indexOf(".")).toLowerCase() + " is not paused!");
-                }else {
-                    System.out.println("Customer " + cmd.substring(0, cmd.indexOf(".")) + " has been resumed");
-                    takeAway = getTime() - pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
-                    pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) + takeAway);
-                    pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), false);
-                }
-            } else if (cmd.contains("display")) {
-                String fullList = (Arrays.asList(customer).toString());
-                String[] fullArray = (fullList.substring(2, fullList.length() - 2).split(", "));
-                if (fullArray[0].equals("")) {
-                    System.err.print("No customers found!");
-                    System.out.println();
-                } else {
 
-                        for (int i = 0; i < fullArray.length; i++) {
-                            String current = fullArray[i];
-                            String singlename = current.substring(0, current.indexOf("="));
-                            if (!(customer.get(singlename) == null)) {
-                                int time = Integer.parseInt(current.substring(current.indexOf("=") + 1, current.length()));
-                                int hour = time / 60;
-                                int min = time % 60;
-                                System.out.println("Name: " + singlename);
-                                if (min < 10) {
-                                    System.out.println("Start time: " + hour + ":0" + min);
-                                } else {
-                                    System.out.println("Start time: " + hour + ":" + min);
+                            for (int i = 0; i < fullArray.length; i++) {
+                                String current = fullArray[i];
+                                String singlename = current.substring(0, current.indexOf("="));
+                                if (!(customer.get(singlename) == null)) {
+                                    int time = Integer.parseInt(current.substring(current.indexOf("=") + 1, current.length()));
+                                    int hour = time / 60;
+                                    int min = time % 60;
+                                    System.out.println("Name: " + singlename);
+                                    if (min < 10) {
+                                        System.out.println("Start time: " + hour + ":0" + min);
+                                    } else {
+                                        System.out.println("Start time: " + hour + ":" + min);
+                                    }
+                                    String currCmd = singlename + ".end";
+                                    System.out.println("Total Pause Time: " + pauseTotal.get(singlename));
+                                    System.out.println("Current fee: " + getCurrent(customer, pause, pauseTotal, currCmd, pausedMap));
+                                    System.out.println("");
                                 }
                                 String currCmd = singlename + ".end";
                                 if (!(pausedMap.get(singlename))) {
@@ -117,7 +121,6 @@ class PriceCalc {
                                 System.out.println("");
                             }
                         }
-                    }
                 } else if (cmd.contains(".current")) {
                     if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
                         System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
@@ -163,7 +166,19 @@ class PriceCalc {
                     System.out.println("Prepaid User Successfully Registered");
                     PCalc prethread = new PCalc(name, money);
                     prethread.start();
-
+                } else if (cmd.equals("help")) {
+                    System.out.println ("------------------------------------------------------");
+                    System.out.println ("                        HELP                          ");
+                    System.out.println ("------------------------------------------------------");
+                    System.out.println ("-- new: Create a new regular user.");
+                    System.out.println ("-- 'User'.end: End a user's session and display fee.");
+                    System.out.println ("-- 'User'.pause: Pause a user's session.");
+                    System.out.println ("-- 'User'.resume: Resume the session of a paused user.");
+                    System.out.println ("-- 'User'.current: Display the current fee of a user");
+                    System.out.println ("-- display: Display current customers with start time, total pause time and current fee.");
+                    System.out.println ("-- end.all: End the session of all customers and display fee for each.");
+                    System.out.println ("-- prepaid: create a new prepaid user.");
+                    System.out.println ("------------------------------------------------------");
                 } else {
                     if (!cmd.equals("")) {
                         System.err.println("\"" + cmd + "\"" + " is not a valid command!\nType 'Help' for a list of commands.");
