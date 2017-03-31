@@ -100,7 +100,14 @@ class PriceCalc {
                     System.out.println("Current fee for " + cmd.substring(0, cmd.indexOf(".")) + " is " + sofar);
                 }
             } else if (cmd.contains(".all")) {
-                customer = endAll(customer, pause, pauseTotal, pausedMap);
+                if (customer.isEmpty()) {
+                    System.err.print("There are currently no customers!");
+                } else {
+                    System.out.println("launched end.all");
+                    customer = endAll(customer, pause, pauseTotal, pausedMap);
+                }
+            } else {
+                System.err.println("\""+cmd+"\"" + " Is not a valid command!");
             }
         }
     }
@@ -172,7 +179,6 @@ class PriceCalc {
                 System.out.println("Total fee: " + getCurrent(customer, pause, pauseTotal, currCmd, pausedMap));
                 System.out.println("");
             } else {
-                System.err.print("No customers found!");
                 System.out.println();
             }
         }
