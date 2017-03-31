@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.lang.*;
 
-class PriceCalc {
+class PriceCalc{
 
     public static void main (String [] args) {
         Scanner in = new Scanner(System.in);
@@ -22,6 +22,9 @@ class PriceCalc {
         HashMap<String, Integer> pause = new HashMap<>();
         HashMap<String, Integer> pauseTotal = new HashMap<>();
         HashMap<String, Boolean> pausedMap = new HashMap<>();
+        HashMap<String, Boolean> existence = new HashMap<>();
+        PCalc forExistenceOnly = new PCalc();
+
         while (!cmd.equals("exit")) {
             cmd = in.nextLine().toLowerCase();
             System.out.println();
@@ -34,7 +37,10 @@ class PriceCalc {
                     name = in.nextLine();
                     if (name.contains(".")) {
                         System.err.println("Name cannot contain a '.'");
+                    } else if ((existence.toString().contains(name.toLowerCase())||forExistenceOnly.search(name.toLowerCase()))&&!name.equals("")){
+                            System.err.println("User '" + name + "' already exists!");
                     } else {
+                        existence.put(name.toLowerCase(), true);
                         System.out.println("Regular User Successfully Registered\n");
                         name = name.toLowerCase();
                         customer.put(name, stime);
@@ -43,7 +49,7 @@ class PriceCalc {
                         pausedMap.put(name, false);
                     }
                 } else if (cmd.contains(".end")) {
-                    if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
+                    if ((customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null)&&!cmd.substring(0, cmd.indexOf(".")).toLowerCase().equals("")) {
                         System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
                         System.out.println();
 
@@ -51,6 +57,7 @@ class PriceCalc {
                         fee = getFee(customer, pauseTotal, cmd);
                         System.out.println("Fee: " + fee + " birr");
                         customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
+                        existence.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
                     }
                 } else if (cmd.contains(".pause")) {
                     if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
@@ -144,25 +151,30 @@ class PriceCalc {
                     if (customer.isEmpty()) {
                         System.err.println("There are currently no customers!");
                     } else {
-                        System.out.println("launched end.all");
                         customer = endAll(customer, pause, pauseTotal, pausedMap);
+                        existence.clear();
                     }
                 } else if (cmd.contains("prepaid")) {
                     stime = getTime();
                     System.out.print("Name: ");
                     name = in.nextLine();
-                    name = name.toLowerCase();
-                    prepaid.put(name, stime);
-                    System.out.print("Money Available: ");
-                    while (!in.hasNextDouble()) {
-                        System.out.print("\nMoney Available: ");
-                        System.err.println ("Invalid Input!");
-                        in.next();
+                    if ((existence.toString().contains(name.toLowerCase())||forExistenceOnly.search(name.toLowerCase()))&&!name.equals("")){
+                        System.err.println("User '" + name + "' already exists!");
+                    } else {
+                        name = name.toLowerCase();
+                        forExistenceOnly.add(name);
+                        prepaid.put(name, stime);
+                        System.out.print("Money Available: ");
+                        while (!in.hasNextDouble()) {
+                            System.out.print("\nMoney Available: ");
+                            System.err.println("Invalid Input!");
+                            in.next();
+                        }
+                        money = in.nextDouble();
+                        System.out.println("Prepaid User Successfully Registered");
+                        PCalc prethread = new PCalc(name, money);
+                        prethread.start();
                     }
-                    money = in.nextDouble();
-                    System.out.println("Prepaid User Successfully Registered");
-                    PCalc prethread = new PCalc(name, money);
-                    prethread.start();
                 } else if (cmd.equals("help")) {
                     System.out.println ("------------------------------------------------------");
                     System.out.println ("                        HELP                          ");
@@ -177,7 +189,7 @@ class PriceCalc {
                     System.out.println ("-- prepaid: create a new prepaid user.");
                     System.out.println ("------------------------------------------------------");
                 } else {
-                    if (!cmd.equals("")) {
+                    if (!cmd.equals("")&&!cmd.equals("exit")) {
                         System.err.println("\"" + cmd + "\"" + " is not a valid command!\nType 'Help' for a list of commands.");
                     }
                 }
@@ -265,9 +277,16 @@ class PriceCalc {
 class PCalc extends Thread {
     private double money;
     private String name;
+    public static HashMap<String, Boolean> existenceP = new HashMap<>();
     public PCalc (String name, double money) {
         this.name = name;
         this.money = money;
+        this.existenceP.put("", false);
+    }
+    public PCalc() {
+        this.name = "d";
+        this.money = 0.0;
+        this.existenceP.put("", false);
     }
     public void run () {
 
@@ -281,11 +300,21 @@ class PCalc extends Thread {
             } catch(InterruptedException ex) {}
         }
         System.out.println("\nCustomer "+name+" has finished their service at " + getTime());
+        remove(name);
 
     }
     public String getTime(){
         DateFormat format = new SimpleDateFormat("HH:mm");
         Date currdate = new Date();
         return format.format(currdate);
+    } public boolean search (String name) {
+        return existenceP.toString().contains(name);
+    } public void print() {
+        System.out.println (existenceP.toString());
+    }  public void add (String name) {
+        existenceP.put(name, true);
+    } public void remove (String name) {
+        existenceP.remove(name);
     }
+
 }
