@@ -55,6 +55,8 @@ class PriceCalc {
                 if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
                     System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
                     System.out.println();
+                } else if (pausedMap.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase())) {
+                    System.err.println("User '" + cmd.substring(0, cmd.indexOf(".")) + "' is already paused!");
                 } else {
                     System.out.println("Customer " + cmd.substring(0, cmd.indexOf(".")) + " has been paused");
                     ptime = getTime();
