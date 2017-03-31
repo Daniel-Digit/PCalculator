@@ -107,8 +107,6 @@ class PriceCalc {
                     System.out.println("launched end.all");
                     customer = endAll(customer, pause, pauseTotal, pausedMap);
                 }
-            } else {
-                System.err.println("\""+cmd+"\"" + " Is not a valid command!");
             } else if (cmd.contains("prepaid")) {
                 stime = getTime();
                 System.out.print("Name: ");
@@ -120,6 +118,8 @@ class PriceCalc {
                 PCalc prethread = new PCalc(name, money);
                 prethread.start();
 
+            }  else {
+                System.err.println("\""+cmd+"\"" + " Is not a valid command!");
             }
         }
     }
