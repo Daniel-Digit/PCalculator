@@ -23,7 +23,6 @@ class PriceCalc {
         HashMap<String, Integer> pauseTotal = new HashMap<>();
         HashMap<String, Boolean> pausedMap = new HashMap<>();
         while (!cmd.equals("exit")) {
-            System.out.print("~");
             cmd = in.nextLine();
             if (cmd.equals("new")) {
                 stime = getTime();
