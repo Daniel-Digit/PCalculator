@@ -119,7 +119,7 @@ class PriceCalc {
                 prethread.start();
 
             }  else {
-                System.err.println("\""+cmd+"\"" + " Is not a valid command!");
+                System.err.println("\""+cmd+"\"" + " is not a valid command!");
             }
         }
     }
