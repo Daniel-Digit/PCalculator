@@ -110,10 +110,7 @@ class PriceCalc {
                                 System.out.println("Total Pause Time: " + pauseTotal.get(singlename));
                                 System.out.println("Current fee: " + getCurrent(customer, pause, pauseTotal, currCmd, pausedMap));
                                 System.out.println("");
-                            } else {
-                            /*System.out.println();*/
                             }
-
                         }
                     }
                 } else if (cmd.contains(".current")) {
