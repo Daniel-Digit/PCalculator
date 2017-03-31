@@ -270,18 +270,14 @@ class PCalc extends Thread {
         this.money = money;
     }
     public void run () {
-
         int timeLeft = (int) (money*4);
-
         int seconds = (timeLeft*60);
-
         for (int i = seconds; i>0; i--) {
             try {
                 Thread.sleep(1000);
             } catch(InterruptedException ex) {}
         }
         System.out.println("\nCustomer "+name+" has finished their service at " + getTime());
-
     }
     public String getTime(){
         DateFormat format = new SimpleDateFormat("HH:mm");
