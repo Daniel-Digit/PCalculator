@@ -283,5 +283,7 @@ class PCalc extends Thread {
         DateFormat format = new SimpleDateFormat("HH:mm");
         Date currdate = new Date();
         return format.format(currdate);
+
+        
     }
 }
