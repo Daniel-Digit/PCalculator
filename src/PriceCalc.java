@@ -37,7 +37,7 @@ class PriceCalc{
                     name = in.nextLine();
                     if (name.contains(".")) {
                         System.err.println("Name cannot contain a '.'");
-                    } else if ((existence.toString().contains(name.toLowerCase())||forExistenceOnly.search(name.toLowerCase()))&&!name.equals("")){
+                    } else if ((existence.toString().contains(name.toLowerCase()+"=true")||forExistenceOnly.search(name.toLowerCase()))&&!name.equals("")){
                             System.err.println("User '" + name + "' already exists!");
                     } else {
                         existence.put(name.toLowerCase(), true);
@@ -253,7 +253,11 @@ class PriceCalc{
         System.out.print("Cash Given: ");
         double given = in.nextDouble();
         double change = given-fee;
-        System.out.println("Change due= "+change);
+        if (change>=0) {
+            System.out.println("Change due= " + change);
+        } else {
+            System.out.println("Additional money needed = " + (-1)*change);
+        }
     }
 
     private static HashMap endAll(HashMap<String, Integer> customer, HashMap<String, Integer> pause, HashMap<String, Integer> pauseTotal, HashMap<String, Boolean> pausedMap) {
@@ -319,7 +323,7 @@ class PCalc extends Thread {
         Date currdate = new Date();
         return format.format(currdate);
     } public boolean search (String name) {
-        return existenceP.toString().contains(name);
+        return existenceP.toString().contains(name+"=true");
     } public void print() {
         System.out.println (existenceP.toString());
     }  public void add (String name) {
