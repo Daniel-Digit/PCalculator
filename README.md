@@ -6,6 +6,11 @@ TO DO List
 	- Make it a method
 	- Also display prepaid
 	- Title each display with user type
+- End expansion (Daniel)
+	- End reg
+	- End pre
+	- End all reg
+	- End all pre
 - 3 types of display reg, prepaid, all
 - Log
 	- History
