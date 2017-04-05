@@ -15,3 +15,4 @@ TO DO List
 - Log
 	- History
 	- Data
+- Optimization (Phlipp)
