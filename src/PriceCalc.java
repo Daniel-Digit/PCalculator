@@ -49,19 +49,32 @@ class PriceCalc{
                         pausedMap.put(name, false);
                     }
                 } else if (cmd.contains(".end")) {
-                    if ((customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null)&&!cmd.substring(0, cmd.indexOf(".")).toLowerCase().equals("")) {
+                    if ((customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null)&&!cmd.substring(0, cmd.indexOf(".")).toLowerCase().equals("")&&(prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null)&&!cmd.substring(0, cmd.indexOf(".")).toLowerCase().equals("")) {
                         System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
                         System.out.println();
                     } else {
-                        fee = getFee(customer, pauseTotal, cmd);
-                        System.out.println("Fee: " + fee + " birr");
-                        customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
-                        System.out.print("Would you like to calculate change?\n Input Y/N: ");
-                        String opt = in.nextLine().toLowerCase();
-                        if (opt.contains("y")) {
-                            calcChange(fee);
+                        if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
+                            fee = getFee(customer, pauseTotal, cmd);
+                            System.out.println("Fee: " + fee + " birr");
+                            customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
+                            System.out.print("Would you like to calculate change?\n Input Y/N: ");
+                            String opt = in.nextLine().toLowerCase();
+                            if (opt.contains("y")) {
+                                calcChange(fee);
+                            }
+                            existence.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                        } else if (prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
+                            fee = getFee(prepaid, cmd);
+                            System.out.println("Fee: " + fee + " birr");
+                            prepaid.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
+                            forExistenceOnly.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                            System.out.print("Would you like to calculate change?\n Input Y/N: ");
+                            String opt = in.nextLine().toLowerCase();
+                            if (opt.contains("y")) {
+                                calcChange(fee);
+                            }
+                            forExistenceOnly.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
                         }
-                        existence.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
                     }
                 } else if (cmd.contains(".pause")) {
                     if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
@@ -153,18 +166,41 @@ class PriceCalc{
                             System.out.println("(Currently paused)");
                         }
                     }
-                } else if (cmd.contains(".all")) {
+                } else if (cmd.contains("end.all")&&cmd.contains("-")&&cmd.contains("r")) { //sample cmd: end.all-r
                     if (customer.isEmpty()) {
-                        System.err.println("There are currently no customers!");
+                        System.err.println("There are currently no regular customers!");
                     } else {
                         customer = endAll(customer, pause, pauseTotal, pausedMap);
                         existence.clear();
                     }
+                } else if (cmd.contains("end.all")&&cmd.contains("-")&&cmd.contains("p")) { //sample cmd: end.all-p
+                    if (prepaid.isEmpty()) {
+                        System.err.println("There are currently no prepaid customers!");
+                    } else {
+                        prepaid = endAllPrep(prepaid);
+                        forExistenceOnly.clear();
+                    }
+                } else if (cmd.equals("end.all")) {
+
+                    if (customer.isEmpty()) {
+                        prepaid = endAllPrep(prepaid);
+                        forExistenceOnly.clear();
+                    } else if (prepaid.isEmpty()) {
+                        customer = endAll(customer, pause, pauseTotal, pausedMap);
+                        existence.clear();
+                    } else {
+                        customer = endAll(customer, pause, pauseTotal, pausedMap);
+                        existence.clear();
+                        prepaid = endAllPrep(prepaid);
+                        forExistenceOnly.clear();
+
+                    }
+
                 } else if (cmd.contains("prepaid")) {
                     stime = getTime();
                     System.out.print("Name: ");
                     name = in.nextLine();
-                    if ((existence.toString().contains(name.toLowerCase())||forExistenceOnly.search(name.toLowerCase()))&&!name.equals("")){
+                    if ((existence.toString().contains(name.toLowerCase()+"=true")||forExistenceOnly.search(name.toLowerCase()))&&!name.equals("")){
                         System.err.println("User '" + name + "' already exists!");
                     } else {
                         name = name.toLowerCase();
@@ -191,7 +227,9 @@ class PriceCalc{
                     System.out.println("-- 'User'.resume: Resume the session of a paused user.");
                     System.out.println("-- 'User'.current: Display the current fee of a user");
                     System.out.println("-- display: Display current customers with start time, total pause time and current fee.");
-                    System.out.println("-- end.all: End the session of all customers and display fee for each.");
+                    System.out.println("-- end.all-r: End the session of all regular users and display fee for each.");
+                    System.out.println("-- end.all-p: End the session of all prepaid users and display fee for each.");
+                    System.out.println("-- end.all: End the session of all prepaid and regular users and display fee for each.");
                     System.out.println("-- prepaid: create a new prepaid user.");
                     System.out.println("-- change: calculate change based off inputted fee and cash given");
                     System.out.println("------------------------------------------------------");
@@ -226,6 +264,14 @@ class PriceCalc{
 
         return sofar;
     }
+    private static double getCurrent(HashMap<String, Integer> prepaid, String cmd) {
+        double sofar= 0.0;
+        if (prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
+            sofar = getFee(prepaid, cmd);
+        }
+
+        return sofar;
+    }
     public static int getTime(){
         DateFormat format = new SimpleDateFormat("HHmm");
         Date currdate = new Date();
@@ -247,6 +293,13 @@ class PriceCalc{
         fee = fee + duration * 0.25;
         return fee;
     }
+    private static double getFee(HashMap<String, Integer> customer, String cmd) {
+        int etime = getTime();
+        int duration = etime - customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+        double fee = 0.0;
+        fee = fee + duration * 0.25;
+        return fee;
+    }
 
     private static void calcChange(double fee) {
         Scanner in = new Scanner(System.in);
@@ -264,7 +317,7 @@ class PriceCalc{
         String fullList = (Arrays.asList(customer).toString());
         String[] fullArray = (fullList.substring(2, fullList.length() - 2).split(", "));
         HashMap<String, Integer> newMap = new HashMap<>();
-
+        System.out.println ("Regular Users: \n");
         for (int i = 0; i < fullArray.length; i++) {
             String current = fullArray[i];
             String singlename = current.substring(0, current.indexOf("="));
@@ -287,8 +340,42 @@ class PriceCalc{
             }
         }
 
+
         return newMap;
     }
+
+    private static HashMap endAllPrep(HashMap<String, Integer> prepaid) {
+        String fullList = (Arrays.asList(prepaid).toString());
+        String[] fullArray = (fullList.substring(2, fullList.length() - 2).split(", "));
+        HashMap<String, Integer> newMap = new HashMap<>();
+        System.out.println ("Prepaid Users: \n");
+        for (int i = 0; i < fullArray.length; i++) {
+            String current = fullArray[i];
+            String singlename = current.substring(0, current.indexOf("="));
+            if (!(prepaid.get(singlename) == null)) {
+                int time = Integer.parseInt(current.substring(current.indexOf("=") + 1, current.length()));
+                int hour = time / 60;
+                int min = time % 60;
+                System.out.println("Name: " + singlename);
+                if (min < 10) {
+                    System.out.println("Start time: " + hour + ":0" + min);
+                } else {
+                    System.out.println("Start time: " + hour + ":" + min);
+                }
+                String currCmd = singlename + ".end";
+                System.out.println("Total fee: " + getCurrent(prepaid,currCmd));
+                System.out.println("");
+                //stop it from Thread
+            } else {
+                System.out.println();
+            }
+        }
+
+
+        return newMap;
+    }
+
+
 
 
 }
@@ -314,8 +401,10 @@ class PCalc extends Thread {
                 Thread.sleep(1000);
             } catch(InterruptedException ex) {}
         }
-        System.out.println("\nCustomer "+name+" has finished their service at " + getTime());
-        remove(name);
+        if (!(existenceP.size()<1)&&existenceP.get(name)!=null) {
+            System.out.println("\nCustomer " + name + " has finished their service at " + getTime());
+            remove(name);
+        }
 
     }
     public String getTime(){
@@ -330,6 +419,9 @@ class PCalc extends Thread {
         existenceP.put(name, true);
     } public void remove (String name) {
         existenceP.remove(name);
+    }
+    public void clear () {
+        existenceP.clear();
     }
 
 }
