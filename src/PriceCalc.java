@@ -1,5 +1,5 @@
 /*
- * By Daniel on 3/29/2017.
+ * Started Daniel and Philipp on 3/29/2017.
  */
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
