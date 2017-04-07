@@ -5,7 +5,7 @@ TO DO List
 - Display extension
 	- Make it a method
 	- Also display prepaid
-	- Title each display with user type
+	- Title each display with user type (Daniel)
 - 3 types of display reg, prepaid, all
 - Log
 	- History
