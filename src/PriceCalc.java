@@ -49,19 +49,32 @@ class PriceCalc{
                         pausedMap.put(name, false);
                     }
                 } else if (cmd.contains(".end")) {
-                    if ((customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null)&&!cmd.substring(0, cmd.indexOf(".")).toLowerCase().equals("")) {
+                    if ((customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null)&&!cmd.substring(0, cmd.indexOf(".")).toLowerCase().equals("")&&(prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null)&&!cmd.substring(0, cmd.indexOf(".")).toLowerCase().equals("")) {
                         System.err.print("User '" + cmd.substring(0, cmd.indexOf(".")) + "' does not exist!");
                         System.out.println();
                     } else {
-                        fee = getFee(customer, pauseTotal, cmd);
-                        System.out.println("Fee: " + fee + " birr");
-                        customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
-                        System.out.print("Would you like to calculate change?\n Input Y/N: ");
-                        String opt = in.nextLine().toLowerCase();
-                        if (opt.contains("y")) {
-                            calcChange(fee);
+                        if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
+                            fee = getFee(customer, pauseTotal, cmd);
+                            System.out.println("Fee: " + fee + " birr");
+                            customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
+                            System.out.print("Would you like to calculate change?\n Input Y/N: ");
+                            String opt = in.nextLine().toLowerCase();
+                            if (opt.contains("y")) {
+                                calcChange(fee);
+                            }
+                            existence.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                        } else if (prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
+                            fee = getFee(prepaid, cmd);
+                            System.out.println("Fee: " + fee + " birr");
+                            prepaid.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
+                            forExistenceOnly.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                            System.out.print("Would you like to calculate change?\n Input Y/N: ");
+                            String opt = in.nextLine().toLowerCase();
+                            if (opt.contains("y")) {
+                                calcChange(fee);
+                            }
+                            forExistenceOnly.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
                         }
-                        existence.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
                     }
                 } else if (cmd.contains(".pause")) {
                     if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
@@ -214,7 +227,9 @@ class PriceCalc{
                     System.out.println("-- 'User'.resume: Resume the session of a paused user.");
                     System.out.println("-- 'User'.current: Display the current fee of a user");
                     System.out.println("-- display: Display current customers with start time, total pause time and current fee.");
-                    System.out.println("-- end.all: End the session of all customers and display fee for each.");
+                    System.out.println("-- end.all-r: End the session of all regular users and display fee for each.");
+                    System.out.println("-- end.all-p: End the session of all prepaid users and display fee for each.");
+                    System.out.println("-- end.all: End the session of all prepaid and regular users and display fee for each.");
                     System.out.println("-- prepaid: create a new prepaid user.");
                     System.out.println("-- change: calculate change based off inputted fee and cash given");
                     System.out.println("------------------------------------------------------");
@@ -386,7 +401,7 @@ class PCalc extends Thread {
                 Thread.sleep(1000);
             } catch(InterruptedException ex) {}
         }
-        if (!(existenceP.size()<1)) {
+        if (!(existenceP.size()<1)&&existenceP.get(name)!=null) {
             System.out.println("\nCustomer " + name + " has finished their service at " + getTime());
             remove(name);
         }
