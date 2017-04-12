@@ -110,7 +110,15 @@ class PriceCalc{
                         pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), false);
                     }
                 } else if (cmd.contains("display")) {
-                    String fullList = (Arrays.asList(customer).toString());
+                    String fullList = "([])";
+                    if (customer.size()!=0 && prepaid.size()!=0) {
+                        fullList = (Arrays.asList(customer).toString().substring(0, Arrays.asList(customer).toString().length() - 2) + ", " + Arrays.asList(prepaid).toString().substring(2, Arrays.asList(prepaid).toString().length()));
+                    }else if (customer.size()!=0 && prepaid.size()==0) {
+                        fullList = (Arrays.asList(customer).toString());
+
+                    } else if (customer.size()==0 && prepaid.size()!=0) {
+                        fullList = (Arrays.asList(prepaid).toString());
+                    }
                     String[] fullArray = (fullList.substring(2, fullList.length() - 2).split(", "));
                     if (fullArray[0].equals("")) {
                         System.err.print("No customers found!");
@@ -125,23 +133,36 @@ class PriceCalc{
                                     int hour = time / 60;
                                     int min = time % 60;
                                     System.out.println("Name: " + singlename);
+                                    System.out.println("Type: Regular");
                                     if (min < 10) {
                                         System.out.println("Start time: " + hour + ":0" + min);
                                     } else {
                                         System.out.println("Start time: " + hour + ":" + min);
                                     }
 
-                                }
-                                String currCmd = singlename + ".end";
-                                if (customer.get(singlename) != null) {
-                                    if (!(pausedMap.get(singlename))) {
-                                        System.out.println("Total Pause Time: " + pauseTotal.get(singlename)+" "+"(Currently not paused)");
-                                    } else {
-                                        System.out.println("Total Pause Time: " + pauseTotal.get(singlename)+" "+"(Currently paused)");
+                                    String currCmd = singlename + ".end";
+                                    if (customer.get(singlename) != null) {
+                                        if (!(pausedMap.get(singlename))) {
+                                            System.out.println("Total Pause Time: " + pauseTotal.get(singlename) + " " + "(Currently not paused)");
+                                        } else {
+                                            System.out.println("Total Pause Time: " + pauseTotal.get(singlename) + " " + "(Currently paused)");
+                                        }
+                                        System.out.println("Current fee: " + getCurrent(customer, pause, pauseTotal, currCmd, pausedMap));
                                     }
-                                    System.out.println("Current fee: " + getCurrent(customer, pause, pauseTotal, currCmd, pausedMap));
+                                    System.out.println("");
+                                } else if (!(prepaid.get(singlename) == null)) {
+                                    int time = Integer.parseInt(current.substring(current.indexOf("=") + 1, current.length()));
+                                    int hour = time / 60;
+                                    int min = time % 60;
+                                    System.out.println("Name: " + singlename);
+                                    System.out.println("Type: Prepaid");
+                                    if (min < 10) {
+                                        System.out.println("Start time: " + hour + ":0" + min);
+                                    } else {
+                                        System.out.println("Start time: " + hour + ":" + min);
+                                    }
+                                    System.out.println("");
                                 }
-                                System.out.println("");
                             }
                         }
                 } else if (cmd.contains(".current")) {
