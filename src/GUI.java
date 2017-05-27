@@ -10,7 +10,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
-public class PriceCalculator extends JFrame{
+public class GUI extends JFrame{
     private static String nam;
     private static String cmd;
     private int stime;
@@ -44,15 +44,15 @@ public class PriceCalculator extends JFrame{
 
     public static void main(String[] args){
 
-        new PriceCalculator();
+        new GUI();
 
     }
-    private PriceCalculator(){
+    private GUI(){
         //Set The Frame
         this.setLayout(new FlowLayout());
         this.setSize(660, 530);
         this.setLocationRelativeTo(null);
-        this.setResizable(true);
+        this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("Price Calculator");
         this.setBackground(new Color(238,238,238));
