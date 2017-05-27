@@ -1,6 +1,6 @@
 /*
  * Started Daniel and Philipp on 3/29/2017.
- */
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -446,3 +446,4 @@ class PCalc extends Thread {
     }
 
 }
+*/
