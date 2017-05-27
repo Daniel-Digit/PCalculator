@@ -18,6 +18,7 @@ public class PriceCalculator extends JFrame{
     private double fee;
     private int ptime = 0;
     private int takeAway;
+    private int index = 0;
     private HashMap<String, Integer> customer = new HashMap<>();
     private HashMap<String, Integer> prepaid = new HashMap<>();
     private final HashMap<String, Integer> pause = new HashMap<>();
@@ -28,9 +29,10 @@ public class PriceCalculator extends JFrame{
     private final PCalc forLog = new PCalc();
     private final JTextArea log = PCalc.log;
     private int n = 0;
-    private ArrayList<String> cur = new ArrayList<>();
-    private String [] currcust = new String [10];
-    private JList customers = new JList(currcust);
+    private ArrayList<String> currcust = new ArrayList<>();
+    public ArrayList<String> newArray = new ArrayList<>();
+    private HashMap<String, Integer> customerIndex = new HashMap<>();
+    private JList customers = new JList(currcust.toArray());
     private DateFormat format = new SimpleDateFormat("HHmm");
     private Date currdate = new Date();
     private String date = format.format(currdate);
@@ -45,34 +47,43 @@ public class PriceCalculator extends JFrame{
         new PriceCalculator();
 
     }
-    // --Commented out by Inspection START (5/24/2017 7:29 PM):
-//    public GUI (String status) {
-//
-//
-//
-//    }
-// --Commented out by Inspection STOP (5/24/2017 7:29 PM)
     private PriceCalculator(){
         //Set The Frame
         this.setLayout(new FlowLayout());
-        this.setSize(650, 500);
+        this.setSize(660, 530);
         this.setLocationRelativeTo(null);
         this.setResizable(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("Price Calculator");
-        this.setBackground(new Color(234,234,234));
+        this.setBackground(new Color(238,238,238));
         //
         //Set Panel
         JPanel bigPanel = new JPanel();
         JPanel logPanel = new JPanel();
+            //Filler Panels
+                JPanel vfillerPanel = new JPanel();
+                vfillerPanel.setBorder(BorderFactory.createLineBorder(new Color(238,238,238)));
+
+                JPanel hfillerPanel = new JPanel();
+                hfillerPanel.setBorder(BorderFactory.createLineBorder(new Color(238,238,238)));
+
+                JPanel vfillerPanel2 = new JPanel();
+                vfillerPanel2.setBorder(BorderFactory.createLineBorder(new Color(238,238,238)));
+
+                JPanel vfillerPanel3 = new JPanel();
+                vfillerPanel3.setBorder(BorderFactory.createLineBorder(new Color(238,238,238)));
+
         logPanel.setLayout(new BoxLayout(logPanel, BoxLayout.PAGE_AXIS));
         JPanel buttonPanel = new JPanel();
         JPanel clearPanel = new JPanel();
-        bigPanel.setBackground(new Color(234, 234, 234));
-        logPanel.setBackground(new Color(234, 234, 234));
+        bigPanel.setBackground(new Color(238,238,238));
+        logPanel.setBackground(new Color(238,238,238));
 
+        this.add(vfillerPanel2);
         this.add (bigPanel);
+        this.add(vfillerPanel);
         this.add (logPanel);
+        this.add (vfillerPanel3);
         //
         //Create List
 
@@ -119,9 +130,9 @@ public class PriceCalculator extends JFrame{
             }
         });
         JTextField nameT = new JTextField("Name", 4);
-        nameT.setBackground(new Color(234, 234, 234));
+        nameT.setBackground(new Color(238,238,238));
         nameT.setEditable(false);
-        Border b = BorderFactory.createLineBorder(new Color(234, 234, 234));
+        Border b = BorderFactory.createLineBorder(new Color(238,238,238));
         nameT.setBorder(b);
 
         JTextField money = new JTextField("Enter Money (for prepaid)", 15);
@@ -135,7 +146,7 @@ public class PriceCalculator extends JFrame{
         });
 
         JTextField moneyT = new JTextField("Money", 4);
-        moneyT.setBackground(new Color(234,234,234));
+        moneyT.setBackground(new Color(238,238,238));
         moneyT.setEditable(false);
         moneyT.setBorder(b);
 
@@ -163,9 +174,9 @@ public class PriceCalculator extends JFrame{
         //Add Change Dialogue
         JDialog diag = new JDialog();
         diag.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        diag.setSize(300,120);
+        diag.setSize(280,120);
         diag.setResizable(false);
-        diag.setLocation(this.getX()+50, this.getY()+10);
+        diag.setLocationRelativeTo(null);
 
             //Add Panel and Text Field
             JPanel panel = new JPanel();
@@ -210,6 +221,26 @@ public class PriceCalculator extends JFrame{
         //
 
         //Text Area
+        JTextArea filler = new JTextArea(24, 1);
+        filler.setEditable(false);
+        filler.setBackground(new Color(238, 238, 238));
+        vfillerPanel.add(filler);
+
+        JTextArea filler2 = new JTextArea(24, 0);
+        filler2.setEditable(false);
+        filler2.setBackground(new Color(238, 238, 238));
+        vfillerPanel2.add(filler2);
+
+        JTextArea filler3 = new JTextArea(24, 0);
+        filler3.setEditable(false);
+        filler3.setBackground(new Color(238, 238, 238));
+        vfillerPanel3.add(filler3);
+
+        JTextArea hfiller = new JTextArea(0, 12);
+        hfiller.setEditable(false);
+        hfiller.setBackground(new Color(238, 238, 238));
+        hfillerPanel.add(hfiller);
+
         log.setBackground(new Color(247, 247, 247));
         Border bordr = BorderFactory.createLineBorder(new Color(127, 127, 127));
         TitledBorder border = new TitledBorder(bordr, "Logs");
@@ -221,6 +252,7 @@ public class PriceCalculator extends JFrame{
         logScroll.setBorder(border);
         logScroll.setVisible(true);
         bigPanel.add(listScroll);
+        logPanel.add(hfillerPanel);
         logPanel.add(logScroll);
         clearPanel.add(clearLog, BorderLayout.CENTER);
         logPanel.add(clearPanel);
@@ -236,19 +268,21 @@ public class PriceCalculator extends JFrame{
             nam = name.getText();
             if (nam.contains(".")) {
                 PCalc.log.append("\nName cannot contain a '.'");
-            } else if ((existence.toString().contains(nam.toLowerCase() + "=true") || forExistenceOnly.search(nam.toLowerCase()) && !nam.equals(""))) {
+            } else if ((existencesearch() || forExistenceOnly.search(nam.toLowerCase()) && !nam.equals(""))) {
                 PCalc.log.append("\nUser '" + nam + "' already exists!");
             } else {
                 existence.put(nam.toLowerCase(), true);
                 PCalc.log.append("\nRegular User Successfully Registered\n");
-                currcust [n] = "("+time+") "+nam;
+                currcust.add ("("+time+") "+nam);
                 nam = nam.toLowerCase();
+                customerIndex.put(nam, n);
                 stime = getTime();
                 customer.put(nam, stime);
                 pause.put(nam, ptime);
                 pauseTotal.put(nam, 0);
                 pausedMap.put(nam, false);
                 n++;
+                customers.setListData(currcust.toArray());
                 customers.updateUI();
             }
 
@@ -271,6 +305,11 @@ public class PriceCalculator extends JFrame{
                         customer.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), null);
                         diag.setVisible(true);
                         existence.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                        index = customerIndex.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                        currcust.remove(index);
+                        customers.setListData(currcust.toArray());
+                        customers.updateUI();
+                        n--;
                     } else if (prepaid.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) != null) {
                         fee = getFee(prepaid, cmd);
                         PCalc.log.append("\nFee: " + fee + " birr");
@@ -278,6 +317,11 @@ public class PriceCalculator extends JFrame{
                         forExistenceOnly.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
                         diag.setVisible(true);
                         forExistenceOnly.remove(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                        index = customerIndex.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                        currcust.remove(index);
+                        customers.setListData(currcust.toArray());
+                        customers.updateUI();
+                        n--;
                     }
                 }
             } else if (cmd.contains(".pause")) {
@@ -295,6 +339,10 @@ public class PriceCalculator extends JFrame{
                     ptime = getTime();
                     pause.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), ptime);
                     pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), true);
+                    index = customerIndex.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                    currcust.set(index, currcust.get(index)+" (paused)");
+                    customers.setListData(currcust.toArray());
+                    customers.updateUI();
                 }
             } else if (cmd.contains(".resume")) {
                 if (customer.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) == null) {
@@ -311,6 +359,10 @@ public class PriceCalculator extends JFrame{
                     takeAway = getTime() - pause.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
                     pauseTotal.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), pauseTotal.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase()) + takeAway);
                     pausedMap.put(cmd.substring(0, cmd.indexOf(".")).toLowerCase(), false);
+                    index = customerIndex.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
+                    currcust.set(index, currcust.get(index).substring(0, currcust.get(index).length()-9));
+                    customers.setListData(currcust.toArray());
+                    customers.updateUI();
                 }
             } else if (cmd.contains("display")) {
                 String fullList = "([])";
@@ -387,12 +439,24 @@ public class PriceCalculator extends JFrame{
                         PCalc.log.append(" (Currently paused)");
                     }
                 }
-            } else if (cmd.contains("end.all") && cmd.contains("-") && cmd.contains("r")) { //sample cmd: end.all-r
+            } /*else if (cmd.contains("end.all") && cmd.contains("-") && cmd.contains("r")) { //sample cmd: end.all-r
                 if (customer.isEmpty()) {
                     PCalc.log.append("\nThere are currently no regular customers!");
                 } else {
+                    n = 0;
+                    for (String c : currcust) {
+                        if (customer.get(c.substring(c.toLowerCase().indexOf(") ")+2, c.length()).toLowerCase())==null) {
+                            newArray.add (c);
+                            n++;
+                        }
+                    }
+                    currcust.clear();
+                    currcust = newArray;
                     customer = endAll(customer, pause, pauseTotal, pausedMap);
                     existence.clear();
+                    customers.setListData(currcust.toArray());
+                    customers.updateUI();
+                    newArray.clear();
                 }
             } else if (cmd.contains("end.all") && cmd.contains("-") && cmd.contains("p")) { //sample cmd: end.all-p
                 if (prepaid.isEmpty()) {
@@ -400,8 +464,17 @@ public class PriceCalculator extends JFrame{
                 } else {
                     prepaid = endAllPrep(prepaid);
                     forExistenceOnly.clear();
+                    for (String c : currcust) {
+                        if (prepaid.get(c.toLowerCase())!=null) {
+                            index = customerIndex.get(c.toLowerCase());
+                            currcust.remove(index);
+                            n--;
+                        }
+                    }
+                    customers.setListData(currcust.toArray());
+                    customers.updateUI();
                 }
-            } else if (cmd.equals("end.all")) {
+            }*/ else if (cmd.equals("end.all")) {
 
                 if (customer.isEmpty()) {
                     prepaid = endAllPrep(prepaid);
@@ -414,22 +487,26 @@ public class PriceCalculator extends JFrame{
                     existence.clear();
                     prepaid = endAllPrep(prepaid);
                     forExistenceOnly.clear();
-
                 }
+                currcust.clear();
+                customers.setListData(currcust.toArray());
+                customers.updateUI();
+                n=0;
+
             } else if (cmd.toLowerCase().equals("help")) {
                 log.setText("------------------------------------------------------------------------------");
                 log.append("\n                                            HELP                                        ");
                 log.append("\n------------------------------------------------------------------------------");
-                log.append("\n-- new: Create a new regular user.");
-                log.append("\n-- 'User'.end: End a user's session and display fee.");
-                log.append("\n-- 'User'.pause: Pause a user's session.");
-                log.append("\n-- 'User'.resume: Resume the session of a paused user.");
-                log.append("\n-- 'User'.current: Display the current fee of a user");
-                log.append("\n-- display: Display current customers with start time, total pause time and current fee.");
-                log.append("\n-- end.all-r: End the session of all regular users and display fee for each.");
-                log.append("\n-- end.all-p: End the session of all prepaid users and display fee for each.");
-                log.append("\n-- end.all: End the session of all prepaid and regular users and display fee for each.");
-                log.append("\n-- prepaid: create a new prepaid user.");
+                log.append("\n-- new: Create a new regular user.\n");
+                log.append("\n-- 'User'.end: End a user's session and display fee.\n");
+                log.append("\n-- 'User'.pause: Pause a user's session.\n");
+                log.append("\n-- 'User'.resume: Resume the session of a paused user.\n");
+                log.append("\n-- 'User'.current: Display the current fee of a user\n");
+                log.append("\n-- display: Display current customers with start time, total pause time and current fee.\n");
+                //log.append("\n-- end.all-r: End the session of all regular users and display fee for each.");
+                //log.append("\n-- end.all-p: End the session of all prepaid users and display fee for each.");
+                log.append("\n-- end.all: End the session of all prepaid and regular users and display fee for each.\n");
+                log.append("\n-- prepaid: create a new prepaid user.\n");
                 log.append("\n-- change: calculate change based off inputted fee and cash given");
                 log.append("\n------------------------------------------------------------------------------");
             } else {
@@ -444,11 +521,12 @@ public class PriceCalculator extends JFrame{
             log.setText("");
             stime = getTime();
             nam = name.getText();
-            if ((existence.toString().contains(nam.toLowerCase() + "=true") || forExistenceOnly.search(nam.toLowerCase()) && !nam.equals(""))) {
+            if ((existencesearch() || forExistenceOnly.search(nam.toLowerCase()) && !nam.equals(""))) {
                 PCalc.log.append ("User '" + nam + "' already exists!");
             } else {
-                currcust [n] = "("+time+") "+nam+", Money: "+money.getText()+" birr";
+                currcust.add ("("+time+") "+nam+", Money: "+money.getText()+" birr");
                 nam = nam.toLowerCase();
+                customerIndex.put(nam, n);
                 forExistenceOnly.add(nam);
                 prepaid.put(nam, stime);
                 double mon = Double.parseDouble(money.getText());
@@ -456,7 +534,7 @@ public class PriceCalculator extends JFrame{
                 PCalc prethread = new PCalc(nam, mon);
                 prethread.start();
                 n++;
-                currcust[0] = null;
+                customers.setListData(currcust.toArray());
                 customers.updateUI();
 
             }
@@ -465,6 +543,10 @@ public class PriceCalculator extends JFrame{
         this.setVisible(true);
 
         //
+    }
+
+    private boolean existencesearch() {
+        return existence.toString().contains("{"+nam.toLowerCase() + "=true") || existence.toString().contains(", "+nam.toLowerCase() + "=true");
     }
 
     private static double getCurrent(HashMap<String, Integer> customer, HashMap<String, Integer> pause, HashMap<String, Integer> pauseTotal, String cmd,HashMap<String, Boolean> pausedMap) {
@@ -523,7 +605,7 @@ public class PriceCalculator extends JFrame{
     private void calcChange(double fee) {
         JDialog change = new JDialog();
         change.setSize(400, 100);
-        change.setLocation(this.getX()+1, this.getY()+10);
+        change.setLocationRelativeTo(null);
         change.setVisible(true);
         change.setTitle("Change Calculator");
         change.setResizable(false);
@@ -534,7 +616,7 @@ public class PriceCalculator extends JFrame{
 
         JTextField cgiven = new JTextField("Cash Given", 7);
         cgiven.setEditable(false);
-        cgiven.setBorder(BorderFactory.createLineBorder(new Color(234,234,234)));
+        cgiven.setBorder(BorderFactory.createLineBorder(new Color(238,238,238)));
 
         JTextField in = new JTextField(10);
 
@@ -543,7 +625,7 @@ public class PriceCalculator extends JFrame{
 
         JTextField display = new JTextField("", 15);
         display.setEditable(false);
-        display.setBorder(BorderFactory.createLineBorder(new Color(234,234,234)));
+        display.setBorder(BorderFactory.createLineBorder(new Color(238,238,238)));
 
         calc.addActionListener(e -> {
 
@@ -559,7 +641,7 @@ public class PriceCalculator extends JFrame{
 
         JTextField spacer4 = new JTextField("", 50);
         spacer4.setEditable(false);
-        spacer4.setBorder(BorderFactory.createLineBorder(new Color(234,234,234)));
+        spacer4.setBorder(BorderFactory.createLineBorder(new Color(238,238,238)));
 
 
         cpanel.add(cgiven);
@@ -679,7 +761,7 @@ class PCalc extends Thread {
     }
 
     public boolean search(String name) {
-        return existenceP.toString().contains(", " + name + "=true");
+        return existenceP.toString().contains(", " + name + "=true")||existenceP.toString().contains("{" + name + "=true");
     }
 
     public void print() {
@@ -704,9 +786,9 @@ class Spacer {
 
     public Spacer (int size) {
         spacer = new JTextField("", size);
-        spacer.setBackground(new Color(234,234,234));
+        spacer.setBackground(new Color(238,238,238));
         spacer.setEditable(false);
-        spacer.setBorder(BorderFactory.createLineBorder(new Color(234,234,234)));
+        spacer.setBorder(BorderFactory.createLineBorder(new Color(238,238,238)));
     }
     public JTextField space () {
         return spacer;
