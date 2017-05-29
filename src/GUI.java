@@ -439,42 +439,7 @@ public class GUI extends JFrame{
                         PCalc.log.append(" (Currently paused)");
                     }
                 }
-            } /*else if (cmd.contains("end.all") && cmd.contains("-") && cmd.contains("r")) { //sample cmd: end.all-r
-                if (customer.isEmpty()) {
-                    PCalc.log.append("\nThere are currently no regular customers!");
-                } else {
-                    n = 0;
-                    for (String c : currcust) {
-                        if (customer.get(c.substring(c.toLowerCase().indexOf(") ")+2, c.length()).toLowerCase())==null) {
-                            newArray.add (c);
-                            n++;
-                        }
-                    }
-                    currcust.clear();
-                    currcust = newArray;
-                    customer = endAll(customer, pause, pauseTotal, pausedMap);
-                    existence.clear();
-                    customers.setListData(currcust.toArray());
-                    customers.updateUI();
-                    newArray.clear();
-                }
-            } else if (cmd.contains("end.all") && cmd.contains("-") && cmd.contains("p")) { //sample cmd: end.all-p
-                if (prepaid.isEmpty()) {
-                    PCalc.log.append("\nThere are currently no prepaid customers!");
-                } else {
-                    prepaid = endAllPrep(prepaid);
-                    forExistenceOnly.clear();
-                    for (String c : currcust) {
-                        if (prepaid.get(c.toLowerCase())!=null) {
-                            index = customerIndex.get(c.toLowerCase());
-                            currcust.remove(index);
-                            n--;
-                        }
-                    }
-                    customers.setListData(currcust.toArray());
-                    customers.updateUI();
-                }
-            }*/ else if (cmd.equals("end.all")) {
+            } else if (cmd.equals("end.all")) {
 
                 if (customer.isEmpty()) {
                     prepaid = endAllPrep(prepaid);
