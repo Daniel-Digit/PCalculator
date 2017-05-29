@@ -1,5 +1,6 @@
 TO DO List
 
+- Bug: prepaid user doesn't end (shows up in display)
 - Display does not show pause time if not resumed
 - x.current for prepaid user
 - Display extension
