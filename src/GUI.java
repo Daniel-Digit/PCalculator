@@ -9,12 +9,12 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+import java.io.*;
 
 public class GUI extends JFrame{
     private static String nam;
     private static String cmd;
     private int stime;
-    // --Commented out by Inspection (5/24/2017 7:29 PM):private double money;
     private double fee;
     private int ptime = 0;
     private int takeAway;
@@ -26,17 +26,17 @@ public class GUI extends JFrame{
     private final HashMap<String, Boolean> pausedMap = new HashMap<>();
     private final HashMap<String, Boolean> existence = new HashMap<>();
     private final PCalc forExistenceOnly = new PCalc();
-    private final PCalc forLog = new PCalc();
+    // --Commented out by Inspection (5/29/2017 8:14 AM):private final PCalc forLog = new PCalc();
     private final JTextArea log = PCalc.log;
     private int n = 0;
-    private ArrayList<String> currcust = new ArrayList<>();
-    public ArrayList<String> newArray = new ArrayList<>();
-    private HashMap<String, Integer> customerIndex = new HashMap<>();
-    private JList customers = new JList(currcust.toArray());
-    private DateFormat format = new SimpleDateFormat("HHmm");
-    private Date currdate = new Date();
-    private String date = format.format(currdate);
-    private String time = date.substring(0,2)+":"+date.substring(2,date.length());
+    private final ArrayList<String> currcust = new ArrayList<>();
+    // --Commented out by Inspection (5/29/2017 8:14 AM):public ArrayList<String> newArray = new ArrayList<>();
+    private final HashMap<String, Integer> customerIndex = new HashMap<>();
+    private final JList customers = new JList(currcust.toArray());
+    private final DateFormat format = new SimpleDateFormat("HHmm");
+    private final Date currdate = new Date();
+    private final String date = format.format(currdate);
+    private final String time = date.substring(0,2)+":"+date.substring(2,date.length());
 
 
 
@@ -47,15 +47,78 @@ public class GUI extends JFrame{
         new GUI();
 
     }
-    private GUI(){
+    private GUI() {
         //Set The Frame
+
+
         this.setLayout(new FlowLayout());
         this.setSize(660, 530);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         this.setTitle("Price Calculator");
         this.setBackground(new Color(238,238,238));
+        this.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {}
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                JDialog save= new JDialog ();
+                save.setLayout(new BorderLayout());
+                save.setTitle("Save?");
+                save.setSize(250, 150);
+                save.setVisible(true);
+                save.setLocationRelativeTo(null);
+                save.setResizable(false);
+                //
+                save.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                GUI.super.dispose();
+
+                JPanel savePanel = new JPanel ();
+                JPanel spacePanel = new JPanel ();
+                JPanel spacePanel2 = new JPanel ();
+                spacePanel.setLayout(new BoxLayout(spacePanel, BoxLayout.PAGE_AXIS));
+
+                JButton saveYes = new JButton ("Yes");
+                JButton saveNo = new JButton ("No");
+
+                JTextField space = new JTextField("Do you want to save your customers?", 20);
+                space.setEditable(false);
+                space.setBorder(BorderFactory.createLineBorder(new Color(238, 238, 238)));
+                spacePanel.add(space);
+
+                JTextField space2 = new JTextField(1);
+                space2.setEditable(false);
+                space2.setBorder(BorderFactory.createLineBorder(new Color(238, 238, 238)));
+
+                JTextField space3 = new JTextField(20);
+                space3.setEditable(false);
+                space3.setBorder(BorderFactory.createLineBorder(new Color(238, 238, 238)));
+                spacePanel2.add(space3);
+
+                savePanel.add (spacePanel);
+                savePanel.add (spacePanel2);
+                savePanel.add(saveYes);
+                savePanel.add(space2);
+                savePanel.add(saveNo);
+
+                save.add(savePanel, BorderLayout.CENTER);
+
+                saveYes.addActionListener(e1 -> {
+
+                });
+                saveNo.addActionListener(e1 -> {
+                    save.dispose();
+                });
+
+            }
+            public void windowClosed(WindowEvent e) {}
+            public void windowIconified(WindowEvent e) {}
+            public void windowDeiconified(WindowEvent e) {}
+            public void windowActivated(WindowEvent e) {}
+            public void windowDeactivated(WindowEvent e) {}
+        });
         //
         //Set Panel
         JPanel bigPanel = new JPanel();
@@ -193,9 +256,7 @@ public class GUI extends JFrame{
                 calcChange(fee);
             });
             JButton no = new JButton("No");
-            no.addActionListener(e -> {
-                diag.dispose();
-            });
+            no.addActionListener(e -> diag.dispose());
             panel.add(yes);
             panel.add(five.space());
             panel.add(no);
@@ -259,9 +320,7 @@ public class GUI extends JFrame{
         //
         //--------------------------------------------------------------
         //Actions
-        clearLog.addActionListener(e -> {
-            log.setText("");
-        });
+        clearLog.addActionListener(e -> log.setText(""));
 
         createReg.addActionListener(e -> {
             log.setText("");
@@ -462,17 +521,12 @@ public class GUI extends JFrame{
                 log.setText("------------------------------------------------------------------------------");
                 log.append("\n                                            HELP                                        ");
                 log.append("\n------------------------------------------------------------------------------");
-                log.append("\n-- new: Create a new regular user.\n");
                 log.append("\n-- 'User'.end: End a user's session and display fee.\n");
                 log.append("\n-- 'User'.pause: Pause a user's session.\n");
                 log.append("\n-- 'User'.resume: Resume the session of a paused user.\n");
                 log.append("\n-- 'User'.current: Display the current fee of a user\n");
                 log.append("\n-- display: Display current customers with start time, total pause time and current fee.\n");
-                //log.append("\n-- end.all-r: End the session of all regular users and display fee for each.");
-                //log.append("\n-- end.all-p: End the session of all prepaid users and display fee for each.");
                 log.append("\n-- end.all: End the session of all prepaid and regular users and display fee for each.\n");
-                log.append("\n-- prepaid: create a new prepaid user.\n");
-                log.append("\n-- change: calculate change based off inputted fee and cash given");
                 log.append("\n------------------------------------------------------------------------------");
             } else {
                 if (!cmd.equals("")&&!cmd.equals("exit")) {
@@ -729,9 +783,11 @@ class PCalc extends Thread {
         return existenceP.toString().contains(", " + name + "=true")||existenceP.toString().contains("{" + name + "=true");
     }
 
-    public void print() {
-        log.append("\n" + existenceP.toString());
-    }
+// --Commented out by Inspection START (5/29/2017 8:14 AM):
+//    public void print() {
+//        log.append("\n" + existenceP.toString());
+//    }
+// --Commented out by Inspection STOP (5/29/2017 8:14 AM)
 
     public void add(String name) {
         existenceP.put(name, true);
@@ -747,7 +803,7 @@ class PCalc extends Thread {
 }
 
 class Spacer {
-    private JTextField spacer;
+    private final JTextField spacer;
 
     public Spacer (int size) {
         spacer = new JTextField("", size);
