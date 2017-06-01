@@ -39,6 +39,7 @@ public class GUI extends JFrame{
 
 
     public static void main(String[] args) throws Exception {
+        //the following if statement checks whether or not the program has been run before
         BufferedReader brr = new BufferedReader(new FileReader("Status.txt"));
         if (brr.readLine().contains("n")){
             new GUI();
@@ -50,7 +51,7 @@ public class GUI extends JFrame{
             fis.close();
             new GUI();
 
-
+        //if the program has been run before, this code will read the serialized files and load the objects into the program
         BufferedReader br = new BufferedReader(new FileReader("customer.ser"));
         if(!(br.readLine() == null)) {
             try {
@@ -174,17 +175,19 @@ public class GUI extends JFrame{
 
                 save.add(savePanel, BorderLayout.CENTER);
 
+                //this creates the dialogue box for the saving option
                 saveYes.addActionListener(e1 -> {
                     BufferedWriter bw = null;
                     FileWriter fw = null;
                     save.dispose();
+                    //reades the objects and serializes them into the .ser files
                     try {
                         try {
                             fw = new FileWriter("Status.txt");
                             bw = new BufferedWriter(fw);
                             bw.write("special");
 
-                        } catch (IOException f) {
+                         } catch (IOException f) {
                             f.printStackTrace();
                         } finally {
                             try {
