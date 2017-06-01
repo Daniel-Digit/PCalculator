@@ -19,35 +19,103 @@ public class GUI extends JFrame{
     private int ptime = 0;
     private int takeAway;
     private int index = 0;
-    private HashMap<String, Integer> customer = new HashMap<>();
-    private HashMap<String, Integer> prepaid = new HashMap<>();
-    private final HashMap<String, Integer> pause = new HashMap<>();
-    private final HashMap<String, Integer> pauseTotal = new HashMap<>();
-    private final HashMap<String, Boolean> pausedMap = new HashMap<>();
-    private final HashMap<String, Boolean> existence = new HashMap<>();
-    private final PCalc forExistenceOnly = new PCalc();
-    // --Commented out by Inspection (5/29/2017 8:14 AM):private final PCalc forLog = new PCalc();
-    private final JTextArea log = PCalc.log;
+    private static HashMap<String, Integer> customer = new HashMap<>(); //this hashmap will be used to store th start time of each regular user
+    private static HashMap<String, Integer> prepaid = new HashMap<>(); //this hashmap will be used to store the start time of each prepaid user
+    private static HashMap<String, Integer> pause = new HashMap<>(); //this HashMap will be used to store the start of the pause time for each paused user
+    private static HashMap<String, Integer> pauseTotal = new HashMap<>(); //this HashMap will be used to store the total pause time of a customer
+    private static HashMap<String, Boolean> pausedMap = new HashMap<>(); //this HashMap will be used to store the pause status of each regular customer. If paused, it would hold false corresponsind to the customer
+    private static HashMap<String, Boolean> existence = new HashMap<>(); //this HashMap will be used to determine if a regualr user with a certain name is already registered or not. If it is, the value would be true
+    private static PCalc forExistenceOnly = new PCalc(); //this HashMap will be used to determine if a prepaid user with a certain name is already registered or not. If it is, the value would be true
+    private static JTextArea log = PCalc.log;
     private int n = 0;
-    private final ArrayList<String> currcust = new ArrayList<>();
-    // --Commented out by Inspection (5/29/2017 8:14 AM):public ArrayList<String> newArray = new ArrayList<>();
-    private final HashMap<String, Integer> customerIndex = new HashMap<>();
-    private final JList customers = new JList(currcust.toArray());
-    private final DateFormat format = new SimpleDateFormat("HHmm");
-    private final Date currdate = new Date();
-    private final String date = format.format(currdate);
-    private final String time = date.substring(0,2)+":"+date.substring(2,date.length());
+    private static ArrayList<String> currcust = new ArrayList<>();
+    private static HashMap<String, Integer> customerIndex = new HashMap<>();
+    private static JList customers = new JList(currcust.toArray());
+    private DateFormat format = new SimpleDateFormat("HHmm");
+    private Date currdate = new Date();
+    private String date = format.format(currdate);
+    private String time = date.substring(0,2)+":"+date.substring(2,date.length());
+    private static DefaultListModel defListModel = new DefaultListModel();
 
 
+    public static void main(String[] args) throws Exception {
+        BufferedReader brr = new BufferedReader(new FileReader("Status.txt"));
+        if (brr.readLine().contains("n")){
+            new GUI();
+        }
+            FileInputStream fis = new  FileInputStream("currcust.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            currcust = (ArrayList<String>) ois.readObject();
+            ois.close();
+            fis.close();
+            new GUI();
 
 
+        BufferedReader br = new BufferedReader(new FileReader("customer.ser"));
+        if(!(br.readLine() == null)) {
+            try {
+                fis = new  FileInputStream("currcust.ser");
+                ois = new ObjectInputStream(fis);
+                fis = new  FileInputStream("customer.ser");
+                ois = new ObjectInputStream(fis);
+                customer = (HashMap<String, Integer>) ois.readObject();
+                ois.close();
+                fis.close();
+                fis = new  FileInputStream("currcust.ser");
+                ois = new ObjectInputStream(fis);
+                currcust = (ArrayList<String>) ois.readObject();
+                ois.close();
+                fis.close();
+                fis = new  FileInputStream("customerIndex.ser");
+                ois = new ObjectInputStream(fis);
+                customerIndex = (HashMap<String, Integer>) ois.readObject();
+                ois.close();
+                fis.close();
+                fis = new  FileInputStream("prepaid.ser");
+                ois = new ObjectInputStream(fis);
+                prepaid = (HashMap<String, Integer>) ois.readObject();
+                ois.close();
+                fis.close();
+                fis = new  FileInputStream("pause.ser");
+                ois = new ObjectInputStream(fis);
+                pause = (HashMap<String, Integer>) ois.readObject();
+                ois.close();
+                fis.close();
+                fis = new  FileInputStream("pauseTotal.ser");
+                ois = new ObjectInputStream(fis);
+                pauseTotal = (HashMap<String, Integer>) ois.readObject();
+                ois.close();
+                fis.close();
+                fis = new  FileInputStream("pausedMap.ser");
+                ois = new ObjectInputStream(fis);
+                pausedMap = (HashMap<String, Boolean>) ois.readObject();
+                ois.close();
+                fis.close();
+                fis = new  FileInputStream("existence.ser");
+                ois = new ObjectInputStream(fis);
+                existence = (HashMap<String, Boolean>) ois.readObject();
+                ois.close();
+                fis.close();
+                fis = new  FileInputStream("forExistenceOnly.ser");
+                ois = new ObjectInputStream(fis);
+                forExistenceOnly = (PCalc) ois.readObject();
+                ois.close();
+                fis.close();
+            } catch(IOException ioe) {
+                ioe.printStackTrace();
+                return;
+            }catch(ClassNotFoundException c) {
+                System.out.println("Class not found");
+                c.printStackTrace();
+                return;
+            }
 
-    public static void main(String[] args){
-
-        new GUI();
+        }
 
     }
-    private GUI() {
+
+    private GUI() throws Exception{
+
         //Set The Frame
 
 
@@ -64,6 +132,7 @@ public class GUI extends JFrame{
 
             @Override
             public void windowClosing(WindowEvent e) {
+                //This is the dialog that pops up and prompts the user to save the customers
                 JDialog save= new JDialog ();
                 save.setLayout(new BorderLayout());
                 save.setTitle("Save?");
@@ -106,10 +175,87 @@ public class GUI extends JFrame{
                 save.add(savePanel, BorderLayout.CENTER);
 
                 saveYes.addActionListener(e1 -> {
+                    BufferedWriter bw = null;
+                    FileWriter fw = null;
+                    save.dispose();
+                    try {
+                        try {
+                            fw = new FileWriter("Status.txt");
+                            bw = new BufferedWriter(fw);
+                            bw.write("special");
 
+                        } catch (IOException f) {
+                            f.printStackTrace();
+                        } finally {
+                            try {
+
+                                if (bw != null)
+                                    bw.close();
+
+                                if (fw != null)
+                                    fw.close();
+
+                            } catch (IOException ex) {
+
+                                ex.printStackTrace();
+
+                            }
+                        }
+                        FileOutputStream fos = new FileOutputStream("customer.ser");
+                        ObjectOutputStream oos = new ObjectOutputStream(fos);
+                        oos.writeObject(customer);
+                        oos.close();
+                        fos.close();
+                        fos = new FileOutputStream("currcust.ser");
+                        oos = new ObjectOutputStream(fos);
+                        oos.writeObject(currcust);
+                        oos.close();
+                        fos.close();
+                        fos = new FileOutputStream("customerIndex.ser");
+                        oos = new ObjectOutputStream(fos);
+                        oos.writeObject(customerIndex);
+                        oos.close();
+                        fos.close();
+                        fos = new FileOutputStream("prepaid.ser");
+                        oos = new ObjectOutputStream(fos);
+                        oos.writeObject(prepaid);
+                        oos.close();
+                        fos.close();
+                        fos = new FileOutputStream("pause.ser");
+                        oos = new ObjectOutputStream(fos);
+                        oos.writeObject(pause);
+                        oos.close();
+                        fos.close();
+                        fos = new FileOutputStream("pauseTotal.ser");
+                        oos = new ObjectOutputStream(fos);
+                        oos.writeObject(pauseTotal);
+                        oos.close();
+                        fos.close();
+                        fos = new FileOutputStream("pausedMap.ser");
+                        oos = new ObjectOutputStream(fos);
+                        oos.writeObject(pausedMap);
+                        oos.close();
+                        fos.close();
+                        fos = new FileOutputStream("existence.ser");
+                        oos = new ObjectOutputStream(fos);
+                        oos.writeObject(existence);
+                        oos.close();
+                        fos.close();
+                        fos = new FileOutputStream("forExistenceOnly.ser");
+                        oos = new ObjectOutputStream(fos);
+                        oos.writeObject(forExistenceOnly);
+                        oos.close();
+                        fos.close();
+
+
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                        return;
+                    }
                 });
                 saveNo.addActionListener(e1 -> {
                     save.dispose();
+                    return;
                 });
 
             }
@@ -123,7 +269,7 @@ public class GUI extends JFrame{
         //Set Panel
         JPanel bigPanel = new JPanel();
         JPanel logPanel = new JPanel();
-            //Filler Panels
+            //Filler Panels - they are here to act as spacers. Without them the different components would be too close to eachother
                 JPanel vfillerPanel = new JPanel();
                 vfillerPanel.setBorder(BorderFactory.createLineBorder(new Color(238,238,238)));
 
@@ -148,9 +294,9 @@ public class GUI extends JFrame{
         this.add (logPanel);
         this.add (vfillerPanel3);
         //
-        //Create List
 
-        DefaultListModel defListModel = new DefaultListModel();
+        //Create Customer List
+
         for (String cust: currcust) {
             if (cust !=null) {
                 defListModel.addElement(cust);
@@ -163,9 +309,8 @@ public class GUI extends JFrame{
         customers.setFixedCellHeight(30);
         TitledBorder bdr = new TitledBorder(BorderFactory.createLineBorder(new Color(127,127,127)), "Customers");
         listScroll.setBorder(bdr);
-        /*
-        customers.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);*/
-
+        customers.setListData(currcust.toArray());
+        customers.updateUI();
 
         //
         //Create Buttons
@@ -188,7 +333,7 @@ public class GUI extends JFrame{
         name.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
                 name.setText("");
-            }
+            } //This makes the "Enter Name" text disappear when the text field is clicked on
             public void focusLost(FocusEvent e) {
             }
         });
@@ -203,7 +348,7 @@ public class GUI extends JFrame{
         money.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
                 money.setText ("");
-            }
+            } //This makes the "Enter Money (for prepaid)" text disappear when the text field is clicked on
             public void focusLost(FocusEvent e) {
             }
         });
@@ -224,7 +369,8 @@ public class GUI extends JFrame{
             }
         });
         //
-        //Spacers
+
+        //Spacers - used to create spaces between components
         Spacer one = new Spacer (10);
         Spacer two = new Spacer (2);
         Spacer three = new Spacer (10);
@@ -234,14 +380,15 @@ public class GUI extends JFrame{
         Spacer seven = new Spacer (10);
         
         //
-        //Add Change Dialogue
+
+        //Add Change Dialog
         JDialog diag = new JDialog();
         diag.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         diag.setSize(280,120);
         diag.setResizable(false);
         diag.setLocationRelativeTo(null);
 
-            //Add Panel and Text Field
+            //Add Panel and Text Field to Change Dialog
             JPanel panel = new JPanel();
             JTextField message = new JTextField("Calculate Change?");
             message.setEditable(false);
@@ -255,6 +402,14 @@ public class GUI extends JFrame{
                 diag.dispose();
                 calcChange(fee);
             });
+
+            yes.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            });
+
             JButton no = new JButton("No");
             no.addActionListener(e -> diag.dispose());
             panel.add(yes);
@@ -264,8 +419,6 @@ public class GUI extends JFrame{
 
         //Add components
         bigPanel.setLayout(new BoxLayout(bigPanel, BoxLayout.PAGE_AXIS));
-        //bigPanel.setLayout(new BorderLayout());
-        //bigPanel.add(spacer6);
         bigPanel.add(nameT);
         bigPanel.add(name);
         bigPanel.add(one.space());
@@ -281,7 +434,7 @@ public class GUI extends JFrame{
         bigPanel.add(seven.space());
         //
 
-        //Text Area
+        //Text Areas
         JTextArea filler = new JTextArea(24, 1);
         filler.setEditable(false);
         filler.setBackground(new Color(238, 238, 238));
@@ -302,6 +455,7 @@ public class GUI extends JFrame{
         hfiller.setBackground(new Color(238, 238, 238));
         hfillerPanel.add(hfiller);
 
+        //This formats the log text area on the right hand side of the GUI
         log.setBackground(new Color(247, 247, 247));
         Border bordr = BorderFactory.createLineBorder(new Color(127, 127, 127));
         TitledBorder border = new TitledBorder(bordr, "Logs");
@@ -320,9 +474,14 @@ public class GUI extends JFrame{
         //
         //--------------------------------------------------------------
         //Actions
-        clearLog.addActionListener(e -> log.setText(""));
+        clearLog.addActionListener(e -> {
+            log.setText("");
+            customers.setListData(currcust.toArray());
+            customers.updateUI();
+        });
 
         createReg.addActionListener(e -> {
+            customers.updateUI();
             log.setText("");
             nam = name.getText();
             if (nam.contains(".")) {
@@ -332,7 +491,7 @@ public class GUI extends JFrame{
             } else {
                 existence.put(nam.toLowerCase(), true);
                 PCalc.log.append("\nRegular User Successfully Registered\n");
-                currcust.add ("("+time+") "+nam);
+                currcust.add (0, "("+time+") "+nam);
                 nam = nam.toLowerCase();
                 customerIndex.put(nam, n);
                 stime = getTime();
@@ -341,15 +500,16 @@ public class GUI extends JFrame{
                 pauseTotal.put(nam, 0);
                 pausedMap.put(nam, false);
                 n++;
-                customers.setListData(currcust.toArray());
-                customers.updateUI();
+
             }
 
-
+            customers.setListData(currcust.toArray());
+            customers.updateUI();
 
         });
 
         command.addActionListener(e -> {
+            customers.updateUI();
             log.setText("");
             cmd = command.getText();
 
@@ -543,7 +703,7 @@ public class GUI extends JFrame{
             if ((existencesearch() || forExistenceOnly.search(nam.toLowerCase()) && !nam.equals(""))) {
                 PCalc.log.append ("User '" + nam + "' already exists!");
             } else {
-                currcust.add ("("+time+") "+nam+", Money: "+money.getText()+" birr");
+                currcust.add (0, "("+time+") "+nam+", Money: "+money.getText()+" birr");
                 nam = nam.toLowerCase();
                 customerIndex.put(nam, n);
                 forExistenceOnly.add(nam);
@@ -558,7 +718,6 @@ public class GUI extends JFrame{
 
             }
         });
-
         this.setVisible(true);
 
         //
@@ -592,19 +751,6 @@ public class GUI extends JFrame{
 
         return sofar;
     }
-    private static int getTime(){
-        DateFormat format = new SimpleDateFormat("HHmm");
-        Date currdate = new Date();
-        String date = format.format(currdate);
-        int time = Integer.parseInt(date.substring(date.length()-2, date.length()));
-        if (date.length()==3) {
-            time = time + (Integer.parseInt(date.substring(0,1))*60);
-        } else if (date.length()==4) {
-            time = time + (Integer.parseInt(date.substring(0,2))*60);
-        }
-
-        return time;
-    }
     private static double getFee(HashMap<String, Integer> customer, HashMap<String, Integer> pausedTotal, String cmd) {
         int removeTime = pausedTotal.get(cmd.substring(0, cmd.indexOf(".")).toLowerCase());
         int etime = getTime();
@@ -619,6 +765,21 @@ public class GUI extends JFrame{
         double fee = 0.0;
         fee = fee + duration * 0.25;
         return fee;
+    }
+
+
+    private static int getTime(){
+        DateFormat format = new SimpleDateFormat("HHmm");
+        Date currdate = new Date();
+        String date = format.format(currdate);
+        int time = Integer.parseInt(date.substring(date.length()-2, date.length()));
+        if (date.length()==3) {
+            time = time + (Integer.parseInt(date.substring(0,1))*60);
+        } else if (date.length()==4) {
+            time = time + (Integer.parseInt(date.substring(0,2))*60);
+        }
+
+        return time;
     }
 
     private void calcChange(double fee) {
@@ -783,12 +944,6 @@ class PCalc extends Thread {
         return existenceP.toString().contains(", " + name + "=true")||existenceP.toString().contains("{" + name + "=true");
     }
 
-// --Commented out by Inspection START (5/29/2017 8:14 AM):
-//    public void print() {
-//        log.append("\n" + existenceP.toString());
-//    }
-// --Commented out by Inspection STOP (5/29/2017 8:14 AM)
-
     public void add(String name) {
         existenceP.put(name, true);
     }
@@ -813,5 +968,4 @@ class Spacer {
     }
     public JTextField space () {
         return spacer;
-    }
-}
+    }}
