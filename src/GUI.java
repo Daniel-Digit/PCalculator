@@ -1,5 +1,8 @@
 /*
-  Created by student on 5/22/2017.
+  Names: Philipp Sommerhalter and Daniel Hodeta.
+  Completed on June 1
+
+  This program is an admin software to for a cyber cafe that monitors internet customers and their services.
  */
 import java.awt.*;
 import java.awt.event.*;
